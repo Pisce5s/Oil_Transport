@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <vector>
 #include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -84,7 +85,8 @@ istream& operator >> (istream& in, tube& p)
     cout << "Введите диаметр: ";
     p.diameter = get_pozitive_number(0.0000001, 9999999.0);
     cout << "Если труба работает, введите 1. Если труба в нерабочем состоянии, введите 0. ";
-    cin >> p.status; // ALERT! RED SPY INCAMING
+    p.status = get_pozitive_number(0, 1);
+    //cin >> p.status; // ALERT! RED SPY INCAMING
     return in;
 }
 
@@ -98,8 +100,20 @@ ostream& operator << (ostream& out, const tube& p)
 
 void edit_CS(CS& t)
 {
-    cout << "Сколько теперь цехов в работе: ";
-    cin >> t.number_of_shops_in_work;
+    int oper;
+    cout << "+1 для добавления цеха, -1 для убавления " << endl;
+    cin >> oper;
+    switch (oper)
+    {
+    case -1:
+        t.number_of_shops_in_work -= 1;
+        break;
+    case 1:
+        t.number_of_shops_in_work += 1;
+        break;
+    default:
+        break;
+    }
 }
 
 void save_CS(const CS& t)
@@ -131,7 +145,8 @@ CS load_CS()
 istream& operator >> (istream& in, CS& p)
 {
     cout << "Введите название КС: ";
-    in >> p.name;
+    //in >> p.name;
+    getline(cin, p.name);
     cout << "Введите число цехов: ";
     p.number_of_shops = get_pozitive_number(1, 9999);
     cout << "Введите число работающих цехов: ";
