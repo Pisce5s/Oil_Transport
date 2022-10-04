@@ -50,7 +50,7 @@ struct CS
 void edit_tube(tube& t)
 {
     cout << "Если труба работает, введите 1. Если труба в нерабочем состоянии, введите 0. ";
-    cin >> t.status;
+    t.status = get_pozitive_number(0, 1);
 }
 
 void save_tube(const tube& t)
@@ -86,7 +86,6 @@ istream& operator >> (istream& in, tube& p)
     p.diameter = get_pozitive_number(0.0000001, 9999999.0);
     cout << "Если труба работает, введите 1. Если труба в нерабочем состоянии, введите 0. ";
     p.status = get_pozitive_number(0, 1);
-    //cin >> p.status; // ALERT! RED SPY INCAMING
     return in;
 }
 
@@ -112,6 +111,7 @@ void edit_CS(CS& t)
         t.number_of_shops_in_work += 1;
         break;
     default:
+        cout << "Ошибка, введите указанные выше значения";
         break;
     }
 }
@@ -145,8 +145,8 @@ CS load_CS()
 istream& operator >> (istream& in, CS& p)
 {
     cout << "Введите название КС: ";
-    //in >> p.name;
-    getline(cin, p.name);
+    in >> p.name;
+    //getline(cin, p.name); Не получилось
     cout << "Введите число цехов: ";
     p.number_of_shops = get_pozitive_number(1, 9999);
     cout << "Введите число работающих цехов: ";
