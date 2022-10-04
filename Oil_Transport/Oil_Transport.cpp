@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -17,7 +18,51 @@ void print_menu()
         << "0.Выход" << endl;
 }
 
-int input_correct_number(int min, int max)
+struct tube
+{
+    float length;
+    float diameter;
+    bool status;
+};
+
+struct CS
+{
+    string name;
+    int number_of_shops;
+    int number_of_shops_in_work;
+    float efficiency;
+};
+
+tube input_tube()
+{
+    tube t;
+    cout << "Введите длину: ";
+    cin >> t.length;
+    cout << "Введите диаметр: ";
+    cin >> t.diameter;
+    cout << "Если труба работает, введите 1. Если труба в нерабочем состоянии, введите 0. ";
+    cin >> t.status; // ALERT! RED SPY INCAMING
+    return t;
+}
+
+void print_tube(tube t)
+{
+    cout << "Длина = " << t.length << endl
+        << "Диаметр = " << t.diameter << endl
+        << "Состояние работы: " << t.status << endl;
+}
+
+void edit_tube(tube& t)
+{
+    cout << "Введите новую длину: ";
+    cin >> t.length;
+    cout << "Введите новый диаметр: ";
+    cin >> t.diameter;
+    cout << "Если труба работает, введите 1. Если труба в нерабочем состоянии, введите 0. ";
+    cin >> t.status;
+}
+
+int input_correct_number(/*int min, int max*/)
 {
     unsigned short int x;
     do
@@ -26,20 +71,25 @@ int input_correct_number(int min, int max)
         cin.ignore(10000, '\n');
         cout << "Введите номер комманды\n";
         cin >> x;
-    } while (cin.fail() || x < min || x > max);
+    } while (cin.fail()/* || x < min || x > max*/);
     return x;
 }
 
 int main()
 {
     setlocale(0, "");
+    vector <tube> tubes;
+    print_menu();
     while (true)
     {
-        print_menu();
-        switch (input_correct_number(0,7))
+        switch (input_correct_number(/*0,7*/))
         {
         case 1:
         {
+            tube t = input_tube();
+            print_tube(t);
+            edit_tube(t);
+            print_tube(t);
             break; //Добавить трубу
         }
         case 2:
