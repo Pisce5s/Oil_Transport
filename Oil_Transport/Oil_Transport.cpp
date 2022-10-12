@@ -64,9 +64,8 @@ void save_tube(const tube& t)
     }
 }
 
-tube load_tube()
+void load_tube(tube& t)
 {
-    tube t;
     ifstream file_in;
     file_in.open("data.txt", ios::in);
     if (file_in.is_open())
@@ -75,7 +74,7 @@ tube load_tube()
         file_in >> t.diameter;
         file_in >> t.status;
         file_in.close();
-    }return t;
+    }
 }
 
 istream& operator >> (istream& in, tube& p)
@@ -93,7 +92,15 @@ ostream& operator << (ostream& out, const tube& p)
 {
     out << "Длина = " << p.length << endl
         << "Диаметр = " << p.diameter << endl
-        << "Состояние работы: " << p.status << endl;
+        << "Состояние работы: ";
+        if (p.status == 0)
+        {
+            out << "Не работает" << endl;
+        }
+        else
+        {
+            out << "Работает" << endl;
+        }
     return out;
 }
 
@@ -105,10 +112,26 @@ void edit_CS(CS& t)
     switch (oper)
     {
     case -1:
-        t.number_of_shops_in_work -= 1;
+        if ((t.number_of_shops_in_work - 1) < 0)
+        {
+            cout << "Число цехов в работе не может быть меньше 0" << endl;
+            edit_CS(t);
+        }
+        else
+        {
+            t.number_of_shops_in_work -= 1;
+        }
         break;
     case 1:
-        t.number_of_shops_in_work += 1;
+        if (t.number_of_shops < (t.number_of_shops_in_work + 1))
+        {
+            cout << "Число цехов в работе не может быть больше числа цехов" << endl;
+            edit_CS(t);
+        }
+        else
+        {
+            t.number_of_shops_in_work += 1;
+        }
         break;
     default:
         cout << "Ошибка, введите указанные выше значения";
@@ -127,9 +150,8 @@ void save_CS(const CS& t)
     }
 }
 
-CS load_CS()
+CS load_CS(CS& t)
 {
-    CS t;
     ifstream file_in;
     file_in.open("data2.txt", ios::in);
     if (file_in.is_open())
@@ -145,14 +167,13 @@ CS load_CS()
 istream& operator >> (istream& in, CS& p)
 {
     cout << "Введите название КС: ";
-    in >> p.name;
-    //getline(cin, p.name); Не получилось
+    getline(cin >> ws, p.name);
     cout << "Введите число цехов: ";
     p.number_of_shops = get_pozitive_number(1, 9999);
     cout << "Введите число работающих цехов: ";
     p.number_of_shops_in_work = get_pozitive_number(0, p.number_of_shops);
     cout << "Введите эффективность: ";
-    p.efficiency = get_pozitive_number(0, 99999999);
+    p.efficiency = get_pozitive_number(0.0, 99999999.0);
     return in;
 }
 
@@ -164,6 +185,32 @@ ostream& operator << (ostream& out, const CS& p)
         << "Эффективность:" << p.efficiency << endl;
     return out;
 }
+
+bool is_data_correct(const tube& t)
+{
+    if ((t.length < 0) or (t.diameter < 0) or ((t.status != 0) and (t.status != 1)))
+    {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
+bool is_data_correct(const CS& t)
+{
+    if ((t.number_of_shops < 0) or (t.number_of_shops_in_work < 0) or (t.number_of_shops_in_work > t.number_of_shops))
+    {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
+
 
 int main()
 {
@@ -188,30 +235,66 @@ int main()
         }
         case 3:
         {
-            cout << t << endl;
-            cout << c << endl;
+            if (is_data_correct(t) == 1)
+            {
+                cout << t << endl;
+            }
+            else
+            {
+                cout << "Трубы нет" << endl;
+            }
+
+            if (is_data_correct(c) == 1)
+            {
+                cout << c << endl;
+            }
+            else
+            {
+                cout << "КС нет" << endl;
+            }
             break; //Просмотр объектов
         }
         case 4:
         {
-            edit_tube(t);
+            if (is_data_correct(t) == 1)
+            {
+                edit_tube(t);;
+            }
+            else
+            {
+                cout << "Трубы нет" << endl;
+            }
+            //edit_tube(t);
             break; //Редактировать трубу
         }
         case 5:
         {
-            edit_CS(c);
+            if (is_data_correct(c) == 1)
+            {
+                edit_CS(c);;
+            }
+            else
+            {
+                cout << "КС нет" << endl;
+            }
             break; //Редактировать КС
         }
         case 6:
         {
-            save_tube(t);
-            save_CS(c);
+            if (is_data_correct(t) == 1)
+            {
+                save_tube(t);
+            }
+            if (is_data_correct(c) == 1)
+            {
+                save_CS(c);;
+            }
             break; //Сохранить
         }
         case 7:
         {
-            t = load_tube();
-            c = load_CS();
+            load_tube(t);
+            load_CS(c);
             break; //Загрузить
         }
         case 0:
