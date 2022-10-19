@@ -192,12 +192,20 @@ ostream& operator << (ostream& out, const CS& p)
     return out;
 }
 
+tube& select_tube(vector<tube> t)
+{
+    cout << "Введите индекс: ";
+    unsigned int index = get_pozitive_number(0u, t.size() );
+    return t[index];
+}
+
 int main()
 {
     setlocale(0, "");
     tube t;
     CS c;
-    //vector <tube> tubes;
+    vector <tube> tubes;
+    //vector <CS> CStations;
     while (true)
     {
         print_menu();
@@ -206,6 +214,7 @@ int main()
         case 1:
         {
             cin >> t;
+            tubes.push_back(t);
             break; //Добавить трубу
         }
         case 2:
@@ -215,7 +224,8 @@ int main()
         }
         case 3:
         {
-            if (is_data_correct(t))     {cout << t << endl;}
+            //if (is_data_correct(t))     {cout << t << endl;}
+            if (is_data_correct(t)) { cout << select_tube(tubes) << endl; }
             else {cout << "Трубы нет" << endl;}
 
             if (is_data_correct(c))     {cout << c << endl;}
@@ -224,7 +234,8 @@ int main()
         }
         case 4:
         {
-            if (is_data_correct(t))     {edit_tube(t);}
+            //if (is_data_correct(t))     {edit_tube(t);}
+            if (is_data_correct(t)) { edit_tube(select_tube(tubes)); }
             else    {cout << "Трубы нет" << endl;}
             break; //Редактировать трубу
         }
