@@ -67,12 +67,8 @@ void edit_tube(tube& t)
     t.status = get_pozitive_number(0, 1);
 }
 
-void save(const tube& t, const CS& c)
+void save(ofstream& file_out, const tube& t, const CS& c)
 {
-    ofstream file_out;
-    file_out.open("data.txt", ios::out);
-    if (file_out.is_open())
-    {
         if (is_data_correct(t)) 
         {
             file_out << "tube" << endl << t.length << endl << t.diameter << endl << t.status << endl;
@@ -81,8 +77,6 @@ void save(const tube& t, const CS& c)
         { 
             file_out << "CS" << endl << c.name << endl << c.number_of_shops << endl << c.number_of_shops_in_work << endl << c.efficiency << endl;
         }
-        file_out.close();
-    }
 }
 
 void load(tube& t, CS& c)
@@ -248,7 +242,14 @@ int main()
         }
         case 6:
         {
-            save(t, c);
+            ofstream file_out;
+            file_out.open("data.txt", ios::out);
+            if (file_out.is_open())
+            {
+                for (tube t : tubes)
+                    save(file_out, t, c);
+                file_out.close();
+            }
             break; //Сохранить
         }
         case 7:
