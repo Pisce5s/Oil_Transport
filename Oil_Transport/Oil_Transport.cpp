@@ -67,42 +67,40 @@ void edit_tube(tube& t)
     t.status = get_pozitive_number(0, 1);
 }
 
-void save(ofstream& file_out, const tube& t, const CS& c)
+void save_tube(ofstream& file_out, const tube& t)
 {
-        if (is_data_correct(t)) 
-        {
-            file_out << "tube" << endl << t.length << endl << t.diameter << endl << t.status << endl;
-        }
-        if (is_data_correct(c)) 
-        { 
-            file_out << "CS" << endl << c.name << endl << c.number_of_shops << endl << c.number_of_shops_in_work << endl << c.efficiency << endl;
-        }
+    if (is_data_correct(t))
+    {
+        file_out << t.length << endl << t.diameter << endl << t.status << endl;
+    }
 }
 
-void load(tube& t, CS& c)
+void save_CS(ofstream& file_out, const CS& c)
 {
-    ifstream file_in;
-    file_in.open("data.txt", ios::in);
-    if (file_in.is_open())
+    if (is_data_correct(c))
     {
-        string keyword;
-        file_in >> keyword;
-        if (keyword == "tube")
-        {
-            file_in >> t.length;
-            file_in >> t.diameter;
-            file_in >> t.status;
-            file_in >> keyword;
-        }
-        if (keyword == "CS")
-        {
-            getline(file_in >> ws, c.name);
-            file_in >> c.number_of_shops;
-            file_in >> c.number_of_shops_in_work;
-            file_in >> c.efficiency;
-        }
-        file_in.close();
+        file_out << c.name << endl << c.number_of_shops << endl << c.number_of_shops_in_work << endl << c.efficiency << endl;
     }
+}
+
+void load_tube(ifstream& file_in, tube& t)
+{
+    string keyword;
+    file_in >> keyword;
+    if (keyword == "tube")
+    {
+        file_in >> t.length;
+        file_in >> t.diameter;
+        file_in >> t.status;
+        file_in >> keyword;
+    }
+    //if (keyword == "CS")
+    //{
+    //    getline(file_in >> ws, c.name);
+    //    file_in >> c.number_of_shops;
+    //    file_in >> c.number_of_shops_in_work;
+    //    file_in >> c.efficiency;
+    //}
 }
 
 istream& operator >> (istream& in, tube& p)
@@ -200,7 +198,7 @@ int main()
     tube t;
     CS c;
     vector <tube> tubes;
-    //vector <CS> CStations;
+    vector <CS> CStations;
     while (true)
     {
         print_menu();
@@ -215,13 +213,17 @@ int main()
         case 2:
         {
             cin >> c;
+            CStations.push_back(c);
             break; //Добавить КС
         }
         case 3:
         {
             //if (is_data_correct(t))     {cout << t << endl;}
-            if (is_data_correct(t)) { cout << select_tube(tubes) << endl; }
-            else {cout << "Трубы нет" << endl;}
+            for (tube t : tubes)
+            {
+                if (is_data_correct(t)) { cout << select_tube(tubes) << endl; }
+                else { cout << "Трубы нет" << endl; }
+            }
 
             if (is_data_correct(c))     {cout << c << endl;}
             else {cout << "КС нет" << endl;}
@@ -246,16 +248,35 @@ int main()
             file_out.open("data.txt", ios::out);
             if (file_out.is_open())
             {
+                file_out << tubes.size() << endl;
                 for (tube t : tubes)
-                    save(file_out, t, c);
+                    save_tube(file_out, t);
+                file_out << CStations.size() << endl;
+                for (CS c : CStations)
+                    save_CS(file_out, c);
                 file_out.close();
             }
             break; //Сохранить
         }
         case 7:
         {
-            load(t, c);
-            tubes.push_back(t);
+            ifstream file_in;
+            file_in.open("data.txt", ios::in);
+            if (file_in.is_open())
+            {
+                int count;
+                file_in >> count;
+                while (count--)
+                {
+                    load_tube(file_in, t);
+                    tubes.push_back(t);
+                }
+
+                file_in.close();
+            }
+            
+            
+            //load(t, c)
             break; //Загрузить
         }
         case 0:
@@ -264,7 +285,7 @@ int main()
         }
         default:
         {
-            cout << "Ошибка, введена несуществующая комманда" << endl;
+            cout << "Ошибка, введена несуществующая манда" << endl;
         }
         }
     }
