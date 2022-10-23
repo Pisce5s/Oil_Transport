@@ -19,7 +19,6 @@ void print_menu()
 }
 
 template <typename T>
-
 T get_pozitive_number(T min, T max)
 {
     T x;
@@ -85,22 +84,17 @@ void save_CS(ofstream& file_out, const CS& c)
 
 void load_tube(ifstream& file_in, tube& t)
 {
-    string keyword;
-    file_in >> keyword;
-    if (keyword == "tube")
-    {
-        file_in >> t.length;
-        file_in >> t.diameter;
-        file_in >> t.status;
-        file_in >> keyword;
-    }
-    //if (keyword == "CS")
-    //{
-    //    getline(file_in >> ws, c.name);
-    //    file_in >> c.number_of_shops;
-    //    file_in >> c.number_of_shops_in_work;
-    //    file_in >> c.efficiency;
-    //}
+    file_in >> t.length;
+    file_in >> t.diameter;
+    file_in >> t.status;
+}
+
+void load_CS(ifstream& file_in, CS& c)
+{
+    getline(file_in >> ws, c.name);
+    file_in >> c.number_of_shops;
+    file_in >> c.number_of_shops_in_work;
+    file_in >> c.efficiency;
 }
 
 istream& operator >> (istream& in, tube& p)
@@ -192,6 +186,14 @@ tube& select_tube(vector<tube>& p)
     return p[index-1];
 }
 
+CS& select_CS(vector<CS>& c)
+{
+    cout << "Введите индекс: ";
+    unsigned int index = get_pozitive_number(1u, static_cast<unsigned int>(c.size()));
+    //unsigned int index = get_pozitive_number(1, c.size());
+    return c[index - 1];
+}
+
 int main()
 {
     setlocale(0, "");
@@ -218,27 +220,21 @@ int main()
         }
         case 3:
         {
-            //if (is_data_correct(t))     {cout << t << endl;}
-            for (tube t : tubes)
-            {
-                if (is_data_correct(t)) { cout << select_tube(tubes) << endl; }
-                else { cout << "Трубы нет" << endl; }
-            }
-
-            if (is_data_correct(c))     {cout << c << endl;}
-            else {cout << "КС нет" << endl;}
+            for (tube& t : tubes)
+                cout << t << endl;
+            for (CS& c : CStations)
+                cout << c << endl;
             break; //Просмотр объектов
         }
         case 4:
         {
-            //if (is_data_correct(t))     {edit_tube(t);}
-            if (is_data_correct(t)) { edit_tube(select_tube(tubes)); }
+            if (is_data_correct(t))     { edit_tube(select_tube(tubes)); }
             else    {cout << "Трубы нет" << endl;}
             break; //Редактировать трубу
         }
         case 5:
         {
-            if (is_data_correct(c))     {edit_CS(c);}
+            if (is_data_correct(c))     {edit_CS(select_CS(CStations)); }
             else    {cout << "КС нет" << endl;}
             break; //Редактировать КС
         }
@@ -249,10 +245,10 @@ int main()
             if (file_out.is_open())
             {
                 file_out << tubes.size() << endl;
-                for (tube t : tubes)
+                for (tube& t : tubes)
                     save_tube(file_out, t);
                 file_out << CStations.size() << endl;
-                for (CS c : CStations)
+                for (CS& c : CStations)
                     save_CS(file_out, c);
                 file_out.close();
             }
@@ -271,12 +267,14 @@ int main()
                     load_tube(file_in, t);
                     tubes.push_back(t);
                 }
-
+                file_in >> count;
+                while (count--)
+                {
+                    load_CS(file_in, c);
+                    CStations.push_back(c);
+                }
                 file_in.close();
             }
-            
-            
-            //load(t, c)
             break; //Загрузить
         }
         case 0:
