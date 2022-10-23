@@ -192,11 +192,12 @@ ostream& operator << (ostream& out, const CS& p)
     return out;
 }
 
-tube& select_tube(vector<tube> t)
+tube& select_tube(vector<tube>& p)
 {
     cout << "Введите индекс: ";
-    unsigned int index = get_pozitive_number(0u, t.size() );
-    return t[index];
+    unsigned int index = get_pozitive_number(1u, static_cast<unsigned int>(p.size()));
+    //unsigned int index = get_pozitive_number(1, p.size());
+    return p[index-1];
 }
 
 int main()
@@ -253,6 +254,7 @@ int main()
         case 7:
         {
             load(t, c);
+            tubes.push_back(t);
             break; //Загрузить
         }
         case 0:
