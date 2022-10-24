@@ -4,6 +4,7 @@
 #include <string>
 #include "CTube.h"
 #include "CCS.h"
+#include <map>
 
 using namespace std;
 
@@ -264,14 +265,14 @@ int main()
             {
                 int count;
                 file_in >> count;
-                //tubes.reserve(count);
+                tubes.reserve(count);
                 while (count--)
                 {
                     load_tube(file_in, t);
                     tubes.push_back(t);
                 }
                 file_in >> count;
-                //CStations.reserve(count);
+                CStations.reserve(count);
                 while (count--)
                 {
                     load_CS(file_in, c);

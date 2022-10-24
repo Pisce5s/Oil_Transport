@@ -6,8 +6,8 @@ public:
     double length;
     double diameter;
     bool status;
-    tube();
-    tube(const tube& t);
-    ~tube();
+    //tube();
+    //tube(const tube& t);
+    //~tube();
 };
 
