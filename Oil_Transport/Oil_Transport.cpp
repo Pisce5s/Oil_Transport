@@ -2,6 +2,8 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include "CTube.h"
+#include "CCS.h"
 
 using namespace std;
 
@@ -31,20 +33,20 @@ T get_pozitive_number(T min, T max)
     return x;
 }
 
-struct tube
-{
-    double length;
-    double diameter;
-    bool status;
-};
+//struct tube
+//{
+//    double length;
+//    double diameter;
+//    bool status;
+//};
 
-struct CS
-{
-    string name;
-    int number_of_shops;
-    int number_of_shops_in_work;
-    double efficiency;
-};
+//struct CS
+//{
+//    string name;
+//    int number_of_shops;
+//    int number_of_shops_in_work;
+//    double efficiency;
+//};
 
 bool is_data_correct(const tube& t)
 {
@@ -171,7 +173,7 @@ istream& operator >> (istream& in, CS& p)
 
 ostream& operator << (ostream& out, const CS& p)
 {
-    out << "Название = " << p.name << endl
+    out << "Название = " << p.get_name() << endl
         << "Число цехов = " << p.number_of_shops << endl
         << "Число цехов в работе: " << p.number_of_shops_in_work << endl
         << "Эффективность:" << p.efficiency << endl;
@@ -262,12 +264,14 @@ int main()
             {
                 int count;
                 file_in >> count;
+                //tubes.reserve(count);
                 while (count--)
                 {
                     load_tube(file_in, t);
                     tubes.push_back(t);
                 }
                 file_in >> count;
+                //CStations.reserve(count);
                 while (count--)
                 {
                     load_CS(file_in, c);
