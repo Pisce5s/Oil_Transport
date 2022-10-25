@@ -4,7 +4,7 @@
 #include <string>
 #include "CTube.h"
 #include "CCS.h"
-#include <map>
+#include <unordered_map>
 #include "utils.h"
 
 
@@ -30,12 +30,12 @@ bool is_data_correct(const tube& t)
     else    { return 1; }
 }
 
-bool is_data_correct(const CS& c)
-{
-    if ((c.number_of_shops < 0) or (c.number_of_shops_in_work < 0) or (c.number_of_shops_in_work > c.number_of_shops))
-    { return 0; }
-    else    { return 1; }
-}
+//bool is_data_correct(const CS& c)
+//{
+//    if ((c.number_of_shops < 0) or (c.number_of_shops_in_work < 0) or (c.number_of_shops_in_work > c.number_of_shops))
+//    { return 0; }
+//    else    { return 1; }
+//}
 
 void edit_tube(tube& t)
 {
@@ -53,10 +53,7 @@ void save_tube(ofstream& file_out, const tube& t)
 
 void save_CS(ofstream& file_out, const CS& c)
 {
-    if (is_data_correct(c))
-    {
-        file_out << c.name << endl << c.number_of_shops << endl << c.number_of_shops_in_work << endl << c.efficiency << endl;
-    }
+    file_out << c.name << endl << c.number_of_shops << endl << c.number_of_shops_in_work << endl << c.efficiency << endl;
 }
 
 void load_tube(ifstream& file_in, tube& t)
@@ -153,11 +150,13 @@ int main()
 {
     setlocale(0, "");
     tube t;
-    CS c;
     vector <tube> tubes;
     vector <CS> CStations;
 
-    map<int, tube> tubes1;
+    unordered_map<int, tube> tubes1;
+    unordered_map<int, CS> CStations1;
+
+    //emplace
 
     while (true)
     {
@@ -172,6 +171,7 @@ int main()
         }
         case 2:
         {
+            CS c;
             cin >> c;
             CStations.push_back(c);
             break; //Добавить КС
@@ -192,8 +192,8 @@ int main()
         }
         case 5:
         {
-            if (is_data_correct(c))     {edit_CS(select_CS(CStations)); }
-            else    {cout << "КС нет" << endl;}
+            if (CStations.size() > 0)
+                edit_CS(select_CS(CStations));
             break; //Редактировать КС
         }
         case 6:
@@ -227,9 +227,11 @@ int main()
                     tubes.push_back(t);
                 }
                 file_in >> count;
+                CStations.clear();
                 CStations.reserve(count);
                 while (count--)
                 {
+                    CS c;
                     load_CS(file_in, c);
                     CStations.push_back(c);
                 }
