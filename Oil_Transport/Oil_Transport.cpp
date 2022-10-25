@@ -5,6 +5,8 @@
 #include "CTube.h"
 #include "CCS.h"
 #include <map>
+#include "utils.h"
+
 
 using namespace std;
 
@@ -20,34 +22,6 @@ void print_menu()
         << "0.Выход" << endl
         << "Введите комманду" << endl;
 }
-
-template <typename T>
-T get_pozitive_number(T min, T max)
-{
-    T x;
-    while ((cin >> x).fail() || x < min || x > max)
-    {
-        cin.clear();
-        cin.ignore(10000, '\n');
-        cout << "Ошибка, введите подходящее число\n";
-    }
-    return x;
-}
-
-//struct tube
-//{
-//    double length;
-//    double diameter;
-//    bool status;
-//};
-
-//struct CS
-//{
-//    string name;
-//    int number_of_shops;
-//    int number_of_shops_in_work;
-//    double efficiency;
-//};
 
 bool is_data_correct(const tube& t)
 {
@@ -159,28 +133,6 @@ void edit_CS(CS& t)
     }
 }
 
-istream& operator >> (istream& in, CS& p)
-{
-    cout << "Введите название КС: ";
-    getline(cin >> ws, p.name);
-    cout << "Введите число цехов: ";
-    p.number_of_shops = get_pozitive_number(1, 9999);
-    cout << "Введите число работающих цехов: ";
-    p.number_of_shops_in_work = get_pozitive_number(0, p.number_of_shops);
-    cout << "Введите эффективность: ";
-    p.efficiency = get_pozitive_number(0.0, 99999999.0);
-    return in;
-}
-
-ostream& operator << (ostream& out, const CS& p)
-{
-    out << "Название = " << p.get_name() << endl
-        << "Число цехов = " << p.number_of_shops << endl
-        << "Число цехов в работе: " << p.number_of_shops_in_work << endl
-        << "Эффективность:" << p.efficiency << endl;
-    return out;
-}
-
 tube& select_tube(vector<tube>& p)
 {
     cout << "Введите индекс: ";
@@ -204,6 +156,9 @@ int main()
     CS c;
     vector <tube> tubes;
     vector <CS> CStations;
+
+    map<int, tube> tubes1;
+
     while (true)
     {
         print_menu();
