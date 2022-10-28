@@ -103,7 +103,7 @@ void edit_CS(CS& t)
     }
 }
 
-tube& select_tube(vector<tube>& p)
+tube& select_tube(unordered_map<int, tube>& p)
 {
     cout << "Введите индекс: ";
     unsigned int index = get_pozitive_number(1u, static_cast<unsigned int>(p.size()));
@@ -123,10 +123,10 @@ int main()
 {
     setlocale(0, "");
     tube t;
-    vector <tube> tubes;
+    //vector <tube> tubes;
     //vector <CS> CStations;
 
-    unordered_map<int, tube> tubes1;
+    unordered_map<int, tube> tubes;
     unordered_map<int, CS> CStations;
 
     //emplace
@@ -139,7 +139,7 @@ int main()
         case 1:
         {
             cin >> t;
-            tubes.push_back(t);
+            tubes.emplace(t.get_MaxID(), t);
             break; //Добавить трубу
         }
         case 2:
@@ -151,8 +151,8 @@ int main()
         }
         case 3:
         {
-            for (tube& t : tubes)
-                cout << t << endl;
+            for (auto& t : tubes)
+                cout << t.second << endl;
             for (auto& c : CStations)
                 cout << c.second << endl;
             break; //Просмотр объектов
@@ -176,8 +176,8 @@ int main()
             if (file_out.is_open())
             {
                 file_out << tubes.size() << endl;
-                for (tube& t : tubes)
-                    save_tube(file_out, t);
+                for (auto& t : tubes)
+                    save_tube(file_out, t.second);
                 file_out << CStations.size() << endl;
                 for (auto& c : CStations)
                     save_CS(file_out, c.second);
@@ -197,7 +197,7 @@ int main()
                 while (count--)
                 {
                     load_tube(file_in, t);
-                    tubes.push_back(t);
+                    tubes.emplace(t.get_MaxID(), t);
                 }
                 file_in >> count;
                 CStations.clear();

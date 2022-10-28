@@ -54,7 +54,7 @@ istream& operator >> (istream& in, CS& p)
     cout << "Введите название КС: ";
     getline(cin >> ws, p.name);
     cout << "Введите число цехов: ";
-    p.number_of_shops = get_pozitive_number(1, 9999);
+    p.number_of_shops = get_pozitive_number(1, 999999999);
     cout << "Введите число работающих цехов: ";
     p.number_of_shops_in_work = get_pozitive_number(0, p.number_of_shops);
     cout << "Введите эффективность: ";
