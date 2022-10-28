@@ -6,8 +6,8 @@ int CS::MaxID = 0;
 
 CS::CS()
 {
-    cout << "CS::CS()" << endl;
-    //id = MaxID++;
+    //cout << "CS::CS()" << endl;
+    id = 0;
     number_of_shops = 0;
     number_of_shops_in_work = 0;
     efficiency = 0;

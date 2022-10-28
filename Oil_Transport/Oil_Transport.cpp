@@ -19,16 +19,17 @@ void print_menu()
         << "5.Редактировать КС" << endl
         << "6.Сохранить" << endl
         << "7.Загрузить" << endl
+        << "8.Удалить" << endl
         << "0.Выход" << endl
         << "Введите комманду" << endl;
 }
 
-bool is_data_correct(const tube& t)
-{
-    if ((t.length < 0) or (t.diameter < 0) or ((t.status != 0) and (t.status != 1)))
-    { return 0; }
-    else    { return 1; }
-}
+//bool is_data_correct(const tube& t)
+//{
+//    if ((t.length < 0) or (t.diameter < 0) or ((t.status != 0) and (t.status != 1)))
+//    { return 0; }
+//    else    { return 1; }
+//}
 
 //bool is_data_correct(const CS& c)
 //{
@@ -45,10 +46,10 @@ void edit_tube(tube& t)
 
 void save_tube(ofstream& file_out, const tube& t)
 {
-    if (is_data_correct(t))
-    {
+    //if (is_data_correct(t))
+    //{
         file_out << t.length << endl << t.diameter << endl << t.status << endl;
-    }
+    //}
 }
 
 void save_CS(ofstream& file_out, const CS& c)
@@ -119,10 +120,38 @@ CS& select_CS(unordered_map<int, CS>& c)
     return c[index - 1];
 }
 
+unsigned int select_tube_index(unordered_map<int, tube>& p)
+{
+    cout << "Введите индекс: ";
+    unsigned int index = get_pozitive_number(1u, static_cast<unsigned int>(p.size()));
+    return (index - 1);
+}
+
+unsigned int select_CS_index(unordered_map<int, CS>& c)
+{
+    cout << "Введите индекс: ";
+    unsigned int index = get_pozitive_number(1u, static_cast<unsigned int>(c.size()));
+    return (index - 1);
+}
+
+void del_item(unordered_map<int, tube>& p, unordered_map<int, CS>& c)
+{
+    bool select_c;
+    cout << "Введите: 0 - для удаления трубы, 1 - для удаления КС" << endl;
+    select_c = get_pozitive_number(false, true);
+    if (select_c)
+    {
+        c.erase(select_CS_index(c));
+    }
+    else
+    {
+        p.erase(select_tube_index(p));
+    }
+}
+
 int main()
 {
     setlocale(0, "");
-    tube t;
     //vector <tube> tubes;
     //vector <CS> CStations;
 
@@ -134,10 +163,11 @@ int main()
     while (true)
     {
         print_menu();
-        switch (get_pozitive_number(0,7))
+        switch (get_pozitive_number(0,8))
         {
         case 1:
         {
+            tube t;
             cin >> t;
             tubes.emplace(t.get_MaxID(), t);
             break; //Добавить трубу
@@ -159,8 +189,10 @@ int main()
         }
         case 4:
         {
-            if (is_data_correct(t))     { edit_tube(select_tube(tubes)); }
-            else    {cout << "Трубы нет" << endl;}
+            if (tubes.size() > 0)
+                edit_tube(select_tube(tubes));
+            //if (is_data_correct(t))     { edit_tube(select_tube(tubes)); }
+            //else    {cout << "Трубы нет" << endl;}
             break; //Редактировать трубу
         }
         case 5:
@@ -193,9 +225,11 @@ int main()
             {
                 int count;
                 file_in >> count;
+                tubes.clear();
                 tubes.reserve(count);
                 while (count--)
                 {
+                    tube t;
                     load_tube(file_in, t);
                     tubes.emplace(t.get_MaxID(), t);
                 }
@@ -211,6 +245,16 @@ int main()
                 file_in.close();
             }
             break; //Загрузить
+        }
+        case 8:
+        {
+            if ((CStations.size() + tubes.size()) > 0)
+                del_item(tubes, CStations);
+            else
+            {
+                cout << "Нет элементов для удаления" << endl;
+            }
+            break;
         }
         case 0:
         {

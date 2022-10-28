@@ -7,7 +7,7 @@ int tube::MaxID = 0;
 tube::tube()
 {
 	//cout << "tube::tube()" << endl;
-    //id = MaxID++;
+    id = 0;
     length = 0;
     diameter = 0;
     status = false;
