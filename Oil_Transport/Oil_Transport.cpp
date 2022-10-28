@@ -71,33 +71,6 @@ void load_CS(ifstream& file_in, CS& c)
     file_in >> c.efficiency;
 }
 
-istream& operator >> (istream& in, tube& p)
-{
-    cout << "Введите длину: ";
-    p.length = get_pozitive_number(0.0000001, 9999999.0);
-    cout << "Введите диаметр: ";
-    p.diameter = get_pozitive_number(0.0000001, 9999999.0);
-    cout << "Если труба работает, введите 1. Если труба в нерабочем состоянии, введите 0. ";
-    p.status = get_pozitive_number(0, 1);
-    return in;
-}
-
-ostream& operator << (ostream& out, const tube& p)
-{
-    out << "Длина = " << p.length << endl
-        << "Диаметр = " << p.diameter << endl
-        << "Состояние работы: ";
-        if (p.status == 0)
-        {
-            out << "Не работает" << endl;
-        }
-        else
-        {
-            out << "Работает" << endl;
-        }
-    return out;
-}
-
 void edit_CS(CS& t)
 {
     int oper;
@@ -138,7 +111,7 @@ tube& select_tube(vector<tube>& p)
     return p[index-1];
 }
 
-CS& select_CS(vector<CS>& c)
+CS& select_CS(unordered_map<int, CS>& c)
 {
     cout << "Введите индекс: ";
     unsigned int index = get_pozitive_number(1u, static_cast<unsigned int>(c.size()));
@@ -151,10 +124,10 @@ int main()
     setlocale(0, "");
     tube t;
     vector <tube> tubes;
-    vector <CS> CStations;
+    //vector <CS> CStations;
 
     unordered_map<int, tube> tubes1;
-    unordered_map<int, CS> CStations1;
+    unordered_map<int, CS> CStations;
 
     //emplace
 
@@ -173,15 +146,15 @@ int main()
         {
             CS c;
             cin >> c;
-            CStations.push_back(c);
+            CStations.emplace(c.get_MaxID(), c);
             break; //Добавить КС
         }
         case 3:
         {
             for (tube& t : tubes)
                 cout << t << endl;
-            for (CS& c : CStations)
-                cout << c << endl;
+            for (auto& c : CStations)
+                cout << c.second << endl;
             break; //Просмотр объектов
         }
         case 4:
@@ -206,8 +179,8 @@ int main()
                 for (tube& t : tubes)
                     save_tube(file_out, t);
                 file_out << CStations.size() << endl;
-                for (CS& c : CStations)
-                    save_CS(file_out, c);
+                for (auto& c : CStations)
+                    save_CS(file_out, c.second);
                 file_out.close();
             }
             break; //Сохранить
@@ -233,7 +206,7 @@ int main()
                 {
                     CS c;
                     load_CS(file_in, c);
-                    CStations.push_back(c);
+                    CStations.emplace(c.get_MaxID(), c);
                 }
                 file_in.close();
             }

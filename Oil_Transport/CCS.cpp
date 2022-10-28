@@ -7,7 +7,7 @@ int CS::MaxID = 0;
 CS::CS()
 {
     cout << "CS::CS()" << endl;
-    id = MaxID++;
+    //id = MaxID++;
     number_of_shops = 0;
     number_of_shops_in_work = 0;
     efficiency = 0;
@@ -21,7 +21,7 @@ CS::CS()
 
 CS::CS(const CS& c)
 {
-    cout << "CS::CS(const CS& c)" << endl;
+    //cout << "CS::CS(const CS& c)" << endl;
     id = MaxID++;
     number_of_shops = c.number_of_shops;
     number_of_shops_in_work = c.number_of_shops_in_work;
@@ -42,6 +42,11 @@ std::string CS::get_name() const
 void CS::set_name(std::string new_name)
 {
     name = new_name;
+}
+
+int CS::get_MaxID() const
+{
+    return MaxID;
 }
 
 istream& operator >> (istream& in, CS& p)
