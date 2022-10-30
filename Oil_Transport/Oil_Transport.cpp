@@ -183,29 +183,14 @@ bool check_by_percent(const CS& c, double param)
 template<typename T>
 vector<int> find_CS_by_filter(unordered_map<int, CS>& CStations, CS_filter<T> f, T param)
 {
-    vector<int> res;
-    int i = 0;
+    vector<int> ID;
     for (auto& c : CStations)
     {
         if (f(c.second, param))
-            res.push_back(i);
-        i++;
+            ID.push_back(c.first);
     }
-    return res;
+    return ID;
 }
-
-//vector<int> find_CS_by_name(unordered_map<int, CS>& CStations, string name = "Unknown")
-//{
-//    vector<int> res;
-//    int i = 0;
-//    for (auto& c : CStations)
-//    {
-//        if (c.second.name == name)
-//            res.push_back(i);
-//        i++;
-//    }
-//    return res;
-//}
 
 int main()
 {
