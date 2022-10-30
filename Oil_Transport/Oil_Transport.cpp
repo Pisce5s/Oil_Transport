@@ -167,33 +167,45 @@ void del_item(unordered_map<int, tube>& p, unordered_map<int, CS>& c)
     }
 }
 
-using CS_filter = bool(*)(const CS& c, string param);
+template<typename T>
+using CS_filter = bool(*)(const CS& c, T param);
 
-vector<int> find_CS_by_filter(unordered_map<int, CS>& CStations, CS_filter f, string name = "Unknown")
+bool check_by_name(const CS& c, string param)
+{
+    return c.name == param;
+}
+
+bool check_by_percent(const CS& c, double param)
+{
+    return (1 - (double)c.number_of_shops_in_work / (double)c.number_of_shops)*100 >= param;
+}
+
+template<typename T>
+vector<int> find_CS_by_filter(unordered_map<int, CS>& CStations, CS_filter<T> f, T param)
 {
     vector<int> res;
     int i = 0;
     for (auto& c : CStations)
     {
-        if (f(c.second, name))
+        if (f(c.second, param))
             res.push_back(i);
         i++;
     }
     return res;
 }
 
-vector<int> find_CS_by_name(unordered_map<int, CS>& CStations, string name = "Unknown")
-{
-    vector<int> res;
-    int i = 0;
-    for (auto& c : CStations)
-    {
-        if (c.second.name == name)
-            res.push_back(i);
-        i++;
-    }
-    return res;
-}
+//vector<int> find_CS_by_name(unordered_map<int, CS>& CStations, string name = "Unknown")
+//{
+//    vector<int> res;
+//    int i = 0;
+//    for (auto& c : CStations)
+//    {
+//        if (c.second.name == name)
+//            res.push_back(i);
+//        i++;
+//    }
+//    return res;
+//}
 
 int main()
 {
@@ -302,18 +314,31 @@ int main()
             }
             break;
         }
+        case 9:
+        {
+            tubes.clear();
+            CStations.clear();
+        }
         case 10:
         {
             break;//Фильтр труб по состоянию
         }
         case 11:
         {
-            for (int i : find_CS_by_name(CStations))
+            cout << "Введите название" << endl;
+            string name = "Unknown";
+            cin >> name;
+            for (int i : find_CS_by_filter(CStations, check_by_name, name))
                 cout << CStations[i];
             break;//Фильтр КС по названию
         }
         case 12:
         {
+            cout << "Введите минимальный процент незадействованных цехов" << endl;
+            double percent = 0;
+            percent = get_pozitive_number(0.0, 100.0);
+            for (int i : find_CS_by_filter(CStations, check_by_percent, percent))
+                cout << CStations[i];
             break;//Фильтр КС по проценту
         }
         case 0:
