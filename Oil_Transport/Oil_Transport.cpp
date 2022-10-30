@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include "utils.h"
 
-
 using namespace std;
 
 void print_menu()
@@ -28,20 +27,6 @@ void print_menu()
         << "Введите комманду" << endl;
 }
 
-//bool is_data_correct(const tube& t)
-//{
-//    if ((t.length < 0) or (t.diameter < 0) or ((t.status != 0) and (t.status != 1)))
-//    { return 0; }
-//    else    { return 1; }
-//}
-
-//bool is_data_correct(const CS& c)
-//{
-//    if ((c.number_of_shops < 0) or (c.number_of_shops_in_work < 0) or (c.number_of_shops_in_work > c.number_of_shops))
-//    { return 0; }
-//    else    { return 1; }
-//}
-
 void edit_tube(tube& t)
 {
     cout << "Если труба работает, введите 1. Если труба в нерабочем состоянии, введите 0. ";
@@ -50,10 +35,7 @@ void edit_tube(tube& t)
 
 void save_tube(ofstream& file_out, const tube& t)
 {
-    //if (is_data_correct(t))
-    //{
-        file_out << t.length << endl << t.diameter << endl << t.status << endl;
-    //}
+    file_out << t.length << endl << t.diameter << endl << t.status << endl;
 }
 
 void save_CS(ofstream& file_out, const CS& c)
@@ -168,6 +150,26 @@ void del_item(unordered_map<int, tube>& p, unordered_map<int, CS>& c)
 }
 
 template<typename T>
+using tube_filter = bool(*)(const tube& c, T param);
+
+bool check_by_status(const tube& c, bool param)
+{
+    return c.status == param;
+}
+
+template<typename T>
+vector<int> find_tube_by_filter(unordered_map<int, tube>& tubes, tube_filter<T> f, T param)
+{
+    vector<int> ID;
+    for (auto& c : tubes)
+    {
+        if (f(c.second, param))
+            ID.push_back(c.first);
+    }
+    return ID;
+}
+
+template<typename T>
 using CS_filter = bool(*)(const CS& c, T param);
 
 bool check_by_name(const CS& c, string param)
@@ -195,13 +197,9 @@ vector<int> find_CS_by_filter(unordered_map<int, CS>& CStations, CS_filter<T> f,
 int main()
 {
     setlocale(0, "");
-    //vector <tube> tubes;
-    //vector <CS> CStations;
 
     unordered_map<int, tube> tubes;
     unordered_map<int, CS> CStations;
-
-    //emplace
 
     while (true)
     {
@@ -306,6 +304,11 @@ int main()
         }
         case 10:
         {
+            cout << "Введите 0 для просмотра нерабочих труб, 1 - для работающих" << endl;
+            bool status = false;
+            status = get_pozitive_number(0, 1);
+            for (int i : find_tube_by_filter(tubes, check_by_status, status))
+                cout << tubes[i] << endl;
             break;//Фильтр труб по состоянию
         }
         case 11:
@@ -314,7 +317,7 @@ int main()
             string name = "Unknown";
             cin >> name;
             for (int i : find_CS_by_filter(CStations, check_by_name, name))
-                cout << CStations[i];
+                cout << CStations[i] << endl;
             break;//Фильтр КС по названию
         }
         case 12:
@@ -323,7 +326,7 @@ int main()
             double percent = 0;
             percent = get_pozitive_number(0.0, 100.0);
             for (int i : find_CS_by_filter(CStations, check_by_percent, percent))
-                cout << CStations[i];
+                cout << CStations[i] << endl;
             break;//Фильтр КС по проценту
         }
         case 0:
