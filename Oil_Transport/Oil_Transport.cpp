@@ -19,7 +19,8 @@ void print_menu()
         << "5.Редактировать КС" << endl
         << "6.Сохранить" << endl
         << "7.Загрузить" << endl
-        << "8.Удалить" << endl
+        << "8.Удалить элемент" << endl
+        << "9.Удалить всё" << endl
         << "0.Выход" << endl
         << "Введите комманду" << endl;
 }
@@ -129,7 +130,7 @@ unsigned int select_tube_index(unordered_map<int, tube>& p)
 
 unsigned int select_CS_index(unordered_map<int, CS>& c)
 {
-    cout << "Введите индекс: ";
+    cout << "Введите индекс(ID): ";
     unsigned int index = get_pozitive_number(1u, static_cast<unsigned int>(c.size()));
     return (index - 1);
 }
@@ -163,7 +164,7 @@ int main()
     while (true)
     {
         print_menu();
-        switch (get_pozitive_number(0,8))
+        switch (get_pozitive_number(0,9))
         {
         case 1:
         {
@@ -225,7 +226,7 @@ int main()
             {
                 int count;
                 file_in >> count;
-                tubes.clear();
+                //tubes.clear();
                 tubes.reserve(count);
                 while (count--)
                 {
@@ -234,7 +235,7 @@ int main()
                     tubes.emplace(t.get_MaxID(), t);
                 }
                 file_in >> count;
-                CStations.clear();
+                //CStations.clear();
                 CStations.reserve(count);
                 while (count--)
                 {
@@ -256,13 +257,19 @@ int main()
             }
             break;
         }
+        case 9:
+        {
+            tubes.clear();
+            CStations.clear();
+            break;
+        }
         case 0:
         {
             return 0; //Выход
         }
         default:
         {
-            cout << "Ошибка, введена несуществующая манда" << endl;
+            cout << "Ошибка, введена несуществующая команда" << endl;
         }
         }
     }
