@@ -21,6 +21,9 @@ void print_menu()
         << "7.Загрузить" << endl
         << "8.Удалить элемент" << endl
         << "9.Удалить всё" << endl
+        << "10.Фильтр труб по состоянию" << endl
+        << "11.Фильтр КС по названию" << endl
+        << "12.Фильтр КС по проценту задействованных цехов" << endl
         << "0.Выход" << endl
         << "Введите комманду" << endl;
 }
@@ -108,46 +111,88 @@ void edit_CS(CS& t)
 tube& select_tube(unordered_map<int, tube>& p)
 {
     cout << "Введите индекс: ";
-    unsigned int index = get_pozitive_number(1u, static_cast<unsigned int>(p.size()));
+    unsigned int index = get_pozitive_number(0u, static_cast<unsigned int>(p.size()-1));
     //unsigned int index = get_pozitive_number(1, p.size());
-    return p[index-1];
+    return p[index];
 }
 
 CS& select_CS(unordered_map<int, CS>& c)
 {
     cout << "Введите индекс: ";
-    unsigned int index = get_pozitive_number(1u, static_cast<unsigned int>(c.size()));
+    unsigned int index = get_pozitive_number(0u, static_cast<unsigned int>(c.size()-1));
     //unsigned int index = get_pozitive_number(1, c.size());
-    return c[index - 1];
+    return c[index];
 }
 
 unsigned int select_tube_index(unordered_map<int, tube>& p)
 {
     cout << "Введите индекс: ";
-    unsigned int index = get_pozitive_number(1u, static_cast<unsigned int>(p.size()));
-    return (index - 1);
+    unsigned int index = get_pozitive_number(0u, static_cast<unsigned int>(p.size()-1));
+    return (index);
 }
 
 unsigned int select_CS_index(unordered_map<int, CS>& c)
 {
     cout << "Введите индекс(ID): ";
-    unsigned int index = get_pozitive_number(1u, static_cast<unsigned int>(c.size()));
-    return (index - 1);
+    unsigned int index = get_pozitive_number(0u, static_cast<unsigned int>(c.size()-1));
+    return (index);
 }
 
 void del_item(unordered_map<int, tube>& p, unordered_map<int, CS>& c)
 {
-    bool select_c;
+    bool select;
     cout << "Введите: 0 - для удаления трубы, 1 - для удаления КС" << endl;
-    select_c = get_pozitive_number(false, true);
-    if (select_c)
+    select = get_pozitive_number(false, true);
+    if (select)
     {
-        c.erase(select_CS_index(c));
+        unsigned int select_c = select_CS_index(c);
+        if (c.count(select_c) == 1)
+            c.erase(select_c);
+        else
+        {
+            cout << "Нет такого элемента" << endl;
+            //del_item(p, c);
+        }
     }
     else
     {
-        p.erase(select_tube_index(p));
+        unsigned int select_p = select_tube_index(p);
+        if (c.count(select_p) == 1)
+            p.erase(select_p);
+        else
+        {
+            cout << "Нет такого элемента" << endl;
+            //del_item(p, c);
+        }
     }
+}
+
+using CS_filter = bool(*)(const CS& c, string param);
+
+vector<int> find_CS_by_filter(unordered_map<int, CS>& CStations, CS_filter f, string name = "Unknown")
+{
+    vector<int> res;
+    int i = 0;
+    for (auto& c : CStations)
+    {
+        if (f(c.second, name))
+            res.push_back(i);
+        i++;
+    }
+    return res;
+}
+
+vector<int> find_CS_by_name(unordered_map<int, CS>& CStations, string name = "Unknown")
+{
+    vector<int> res;
+    int i = 0;
+    for (auto& c : CStations)
+    {
+        if (c.second.name == name)
+            res.push_back(i);
+        i++;
+    }
+    return res;
 }
 
 int main()
@@ -164,7 +209,7 @@ int main()
     while (true)
     {
         print_menu();
-        switch (get_pozitive_number(0,9))
+        switch (get_pozitive_number(0,12))
         {
         case 1:
         {
@@ -226,7 +271,7 @@ int main()
             {
                 int count;
                 file_in >> count;
-                //tubes.clear();
+                tubes.clear();
                 tubes.reserve(count);
                 while (count--)
                 {
@@ -235,7 +280,7 @@ int main()
                     tubes.emplace(t.get_MaxID(), t);
                 }
                 file_in >> count;
-                //CStations.clear();
+                CStations.clear();
                 CStations.reserve(count);
                 while (count--)
                 {
@@ -257,11 +302,19 @@ int main()
             }
             break;
         }
-        case 9:
+        case 10:
         {
-            tubes.clear();
-            CStations.clear();
-            break;
+            break;//Фильтр труб по состоянию
+        }
+        case 11:
+        {
+            for (int i : find_CS_by_name(CStations))
+                cout << CStations[i];
+            break;//Фильтр КС по названию
+        }
+        case 12:
+        {
+            break;//Фильтр КС по проценту
         }
         case 0:
         {
