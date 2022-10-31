@@ -6,6 +6,7 @@
 #include "CCS.h"
 #include <unordered_map>
 #include "utils.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -207,10 +208,19 @@ void change(tube& t, const bool& new_status)
         t.status = 1;
 }
 
-//void change(CS& c)
-//{
-//
-//}
+void change(CS& c, const bool& edit)
+{
+    if (edit == 1)
+    {
+        if (c.number_of_shops_in_work < c.number_of_shops)
+            c.number_of_shops_in_work++;
+    }
+    else
+    {
+        if (c.number_of_shops_in_work > 0)
+            c.number_of_shops_in_work--;
+    }
+}
 
 void batch_editing(unordered_map<int, tube>& t)
 {
@@ -228,11 +238,6 @@ void batch_editing(unordered_map<int, tube>& t)
         vector<int> ID;
         cout << "Введите ID нужных труб, для завершения выбора введите -1" << endl;
         unsigned int select;
-
-        //cout << "Введите индекс(ID): ";
-        //unsigned int index = get_pozitive_number(0u, static_cast<unsigned int>(p.size() - 1));
-        //return (index);
-
         while (1)
         {
             tube crutch;
@@ -240,7 +245,12 @@ void batch_editing(unordered_map<int, tube>& t)
             if (select == -1)
                 break;
             if (t.count(select) == 1)
-                ID.push_back(select);
+            {
+                if (std::find(ID.begin(), ID.end(), select) != ID.end())
+                    ID.push_back(select);
+                //else
+                //ID.push_back(select);
+            }
             else
             {
                 cout << "Нет такого элемента" << endl;
@@ -259,18 +269,48 @@ void batch_editing(unordered_map<int, tube>& t)
     }
 }
 
-//void batch_editing(unordered_map<int, tube>& t)
-//{
-//    cout << "Введите 1 для редактирования всех найдённых элементов, для дальнейшего выбора введите 0" << endl;
-//    bool choiсe = get_pozitive_number(0, 1);
-//    if (choiсe)
-//    {
-//        cout << "Изменение состояния: 1 - выбранные работают, 0 - в нерабочем состоянии" << endl;
-//        bool choiсe_status = get_pozitive_number(0, 1);
-//        for (auto& a : t)
-//            change(a.second, choiсe_status);
-//    }
-//}
+void batch_editing(unordered_map<int, CS>& t)
+{
+    cout << "Введите 1 для редактирования всех найдённых элементов, для дальнейшего выбора введите 0" << endl;
+    bool choiсe = get_pozitive_number(0, 1);
+    if (choiсe)
+    {
+        cout << "Изменение состояния: 1 - добавить всем рабочий цех, 0 - убавить" << endl;
+        bool choiсe_status = get_pozitive_number(0, 1);
+        for (auto& a : t)
+            change(a.second, choiсe_status);
+    }
+    else
+    {
+        vector<int> ID;
+        cout << "Введите ID нужных КС, для завершения выбора введите -1" << endl;
+        unsigned int select;
+        while (1)
+        {
+            CS crutch;
+            select = get_pozitive_number(-1, (int)(crutch.get_MaxID()));
+            if (select == -1)
+                break;
+            if (t.count(select) == 1)
+                if (std::find(ID.begin(), ID.end(), select) != ID.end())
+                    ID.push_back(select);
+            else
+            {
+                cout << "Нет такого элемента" << endl;
+            }
+        }
+
+        if (ID.size() > 0)
+        {
+            cout << "Изменение состояния: 1 - добавить всем рабочий цех, 0 - убавить" << endl;
+            bool choiсe_status = get_pozitive_number(0, 1);
+            for (const int& i : ID)
+                change(t[i], choiсe_status);
+        }
+        else
+            cout << "Не выбрано элементов для редактирования" << endl;
+    }
+}
 
 int main()
 {
@@ -415,7 +455,7 @@ int main()
                 cout << "Введите 1 для редактирования КС, для труб введите 0" << endl;
                 bool choiсe = get_pozitive_number(0, 1);
                 if (choiсe)
-                    int gg;//batch_editing(CStations);
+                    batch_editing(CStations);
                 else
                     batch_editing(tubes);
             }
