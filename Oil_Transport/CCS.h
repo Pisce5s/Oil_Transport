@@ -4,8 +4,8 @@
 class CS
 {
     int id;
-public:
     static int MaxID;
+public:
     std::string name;
     int number_of_shops;
     int number_of_shops_in_work;

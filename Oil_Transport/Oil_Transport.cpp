@@ -23,6 +23,7 @@ void print_menu()
         << "10.Фильтр труб по состоянию" << endl
         << "11.Фильтр КС по названию" << endl
         << "12.Фильтр КС по проценту задействованных цехов" << endl
+        << "13.Пакетное редактирование" << endl
         << "0.Выход" << endl
         << "Введите комманду" << endl;
 }
@@ -92,31 +93,35 @@ void edit_CS(CS& t)
 
 tube& select_tube(unordered_map<int, tube>& p)
 {
-    cout << "Введите индекс: ";
-    unsigned int index = get_pozitive_number(0u, static_cast<unsigned int>(p.size()-1));
+    cout << "Введите индекс(ID): ";
+    tube crutch;
+    unsigned int index = get_pozitive_number(0u, (unsigned int)(crutch.get_MaxID()));
     //unsigned int index = get_pozitive_number(1, p.size());
     return p[index];
 }
 
 CS& select_CS(unordered_map<int, CS>& c)
 {
-    cout << "Введите индекс: ";
-    unsigned int index = get_pozitive_number(0u, static_cast<unsigned int>(c.size()-1));
+    cout << "Введите индекс(ID): ";
+    tube crutch;
+    unsigned int index = get_pozitive_number(0u, (unsigned int)(crutch.get_MaxID()));
     //unsigned int index = get_pozitive_number(1, c.size());
     return c[index];
 }
 
 unsigned int select_tube_index(unordered_map<int, tube>& p)
 {
-    cout << "Введите индекс: ";
-    unsigned int index = get_pozitive_number(0u, static_cast<unsigned int>(p.size()-1));
+    cout << "Введите индекс(ID): ";
+    tube crutch;
+    unsigned int index = get_pozitive_number(0u, (unsigned int)(crutch.get_MaxID()));
     return (index);
 }
 
 unsigned int select_CS_index(unordered_map<int, CS>& c)
 {
     cout << "Введите индекс(ID): ";
-    unsigned int index = get_pozitive_number(0u, static_cast<unsigned int>(c.size()-1));
+    tube crutch;
+    unsigned int index = get_pozitive_number(0u, (unsigned int)(crutch.get_MaxID()));
     return (index);
 }
 
@@ -194,6 +199,79 @@ vector<int> find_CS_by_filter(unordered_map<int, CS>& CStations, CS_filter<T> f,
     return ID;
 }
 
+void change(tube& t, const bool& new_status) 
+{
+    if (new_status == 0)
+        t.status = 0;
+    else
+        t.status = 1;
+}
+
+//void change(CS& c)
+//{
+//
+//}
+
+void batch_editing(unordered_map<int, tube>& t)
+{
+    cout << "Введите 1 для редактирования всех найдённых элементов, для дальнейшего выбора введите 0" << endl;
+    bool choiсe = get_pozitive_number(0, 1);
+    if (choiсe)
+    {
+        cout << "Изменение состояния: 1 - выбранные работают, 0 - в нерабочем состоянии" << endl;
+        bool choiсe_status = get_pozitive_number(0, 1);
+        for (auto& a : t)
+            change(a.second, choiсe_status);
+    }
+    else
+    {
+        vector<int> ID;
+        cout << "Введите ID нужных труб, для завершения выбора введите -1" << endl;
+        unsigned int select;
+
+        //cout << "Введите индекс(ID): ";
+        //unsigned int index = get_pozitive_number(0u, static_cast<unsigned int>(p.size() - 1));
+        //return (index);
+
+        while (1)
+        {
+            tube crutch;
+            select = get_pozitive_number(-1, (int)(crutch.get_MaxID()));
+            if (select == -1)
+                break;
+            if (t.count(select) == 1)
+                ID.push_back(select);
+            else
+            {
+                cout << "Нет такого элемента" << endl;
+            }
+        }
+
+        if (ID.size() > 0)
+        {
+            cout << "Изменение состояния: 1 - выбранные работают, 0 - в нерабочем состоянии" << endl;
+            bool choiсe_status = get_pozitive_number(0, 1);
+            for (const int& i : ID)
+                change(t[i], choiсe_status);
+        }
+        else
+            cout << "Не выбрано элементов для редактирования" << endl;
+    }
+}
+
+//void batch_editing(unordered_map<int, tube>& t)
+//{
+//    cout << "Введите 1 для редактирования всех найдённых элементов, для дальнейшего выбора введите 0" << endl;
+//    bool choiсe = get_pozitive_number(0, 1);
+//    if (choiсe)
+//    {
+//        cout << "Изменение состояния: 1 - выбранные работают, 0 - в нерабочем состоянии" << endl;
+//        bool choiсe_status = get_pozitive_number(0, 1);
+//        for (auto& a : t)
+//            change(a.second, choiсe_status);
+//    }
+//}
+
 int main()
 {
     setlocale(0, "");
@@ -204,7 +282,7 @@ int main()
     while (true)
     {
         print_menu();
-        switch (get_pozitive_number(0,12))
+        switch (get_pozitive_number(0,13))
         {
         case 1:
         {
@@ -222,8 +300,10 @@ int main()
         }
         case 3:
         {
+            cout << "-----ТРУБЫ-----" << endl;
             for (auto& t : tubes)
                 cout << t.second << endl;
+            cout << "-------КС-------" << endl;
             for (auto& c : CStations)
                 cout << c.second << endl;
             break; //Просмотр объектов
@@ -232,8 +312,6 @@ int main()
         {
             if (tubes.size() > 0)
                 edit_tube(select_tube(tubes));
-            //if (is_data_correct(t))     { edit_tube(select_tube(tubes)); }
-            //else    {cout << "Трубы нет" << endl;}
             break; //Редактировать трубу
         }
         case 5:
@@ -301,6 +379,7 @@ int main()
         {
             tubes.clear();
             CStations.clear();
+            break;
         }
         case 10:
         {
@@ -328,6 +407,21 @@ int main()
             for (int i : find_CS_by_filter(CStations, check_by_percent, percent))
                 cout << CStations[i] << endl;
             break;//Фильтр КС по проценту
+        }
+        case 13:
+        {
+            if (tubes.size() + CStations.size() > 0)
+            {
+                cout << "Введите 1 для редактирования КС, для труб введите 0" << endl;
+                bool choiсe = get_pozitive_number(0, 1);
+                if (choiсe)
+                    int gg;//batch_editing(CStations);
+                else
+                    batch_editing(tubes);
+            }
+            else
+                cout << "Нет элементов для пакетного редактирования" << endl;
+            break;//Пакетное ред.
         }
         case 0:
         {
