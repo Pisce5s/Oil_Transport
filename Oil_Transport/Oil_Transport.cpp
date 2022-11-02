@@ -246,7 +246,7 @@ void batch_editing(unordered_map<int, tube>& t)
                 break;
             if (t.count(select) == 1)
             {
-                if (std::find(ID.begin(), ID.end(), select) != ID.end())
+                if (!(std::find(ID.begin(), ID.end(), select) != ID.end()))
                     ID.push_back(select);
                 //else
                 //ID.push_back(select);
@@ -292,8 +292,10 @@ void batch_editing(unordered_map<int, CS>& t)
             if (select == -1)
                 break;
             if (t.count(select) == 1)
-                if (std::find(ID.begin(), ID.end(), select) != ID.end())
+                if (!(std::find(ID.begin(), ID.end(), select) != ID.end()))
+                {
                     ID.push_back(select);
+                }
             else
             {
                 cout << "Нет такого элемента" << endl;
@@ -318,6 +320,9 @@ int main()
 
     unordered_map<int, tube> tubes;
     unordered_map<int, CS> CStations;
+
+    vector<int> tubes_filt;
+    vector<int> CStations_filt;
 
     while (true)
     {
@@ -426,8 +431,12 @@ int main()
             cout << "Введите 0 для просмотра нерабочих труб, 1 - для работающих" << endl;
             bool status = false;
             status = get_pozitive_number(0, 1);
+            tubes_filt.clear();
             for (int i : find_tube_by_filter(tubes, check_by_status, status))
+            {
                 cout << tubes[i] << endl;
+                tubes_filt.push_back(i);
+            }
             break;//Фильтр труб по состоянию
         }
         case 11:
@@ -435,8 +444,12 @@ int main()
             cout << "Введите название" << endl;
             string name = "Unknown";
             cin >> name;
+            CStations_filt.clear();
             for (int i : find_CS_by_filter(CStations, check_by_name, name))
+            {
                 cout << CStations[i] << endl;
+                CStations_filt.push_back(i);
+            }
             break;//Фильтр КС по названию
         }
         case 12:
@@ -444,12 +457,29 @@ int main()
             cout << "Введите минимальный процент незадействованных цехов" << endl;
             double percent = 0;
             percent = get_pozitive_number(0.0, 100.0);
+            CStations_filt.clear();
             for (int i : find_CS_by_filter(CStations, check_by_percent, percent))
+            {
                 cout << CStations[i] << endl;
+                CStations_filt.push_back(i);
+            }
             break;//Фильтр КС по проценту
         }
         case 13:
         {
+            cout << "Введите 1 для редактирования отфильтрованных элементов, для работы со всеми введите 0" << endl;
+            bool choice_filter = get_pozitive_number(0, 1);
+            unordered_map<int, tube> tubes_to_do;
+            unordered_map<int, CS> CS_to_do;
+            if (choice_filter)
+            {
+                
+            }
+            else
+            {
+                tubes_to_do = tubes;
+                CS_to_do = CStations;
+            }
             if (tubes.size() + CStations.size() > 0)
             {
                 cout << "Введите 1 для редактирования КС, для труб введите 0" << endl;
