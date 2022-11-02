@@ -497,19 +497,19 @@ int main()
         }
         case 13:
         {
-            cout << "Введите 1 для редактирования отфильтрованных элементов, для работы со всеми введите 0" << endl;
-            bool choice_filter = get_pozitive_number(0, 1);
-            unordered_map<int, tube> tubes_to_do;
-            unordered_map<int, CS> CS_to_do;
-            if (choice_filter)
-            {
-                
-            }
-            else
-            {
-                tubes_to_do = tubes;
-                CS_to_do = CStations;
-            }
+            //cout << "Введите 1 для редактирования отфильтрованных элементов, для работы со всеми введите 0" << endl;
+            //bool choice_filter = get_pozitive_number(0, 1);
+            //unordered_map<int, tube> tubes_to_do;
+            //unordered_map<int, CS> CS_to_do;
+            //if (choice_filter)
+            //{
+            //    
+            //}
+            //else
+            //{
+            //    tubes_to_do = tubes;
+            //    CS_to_do = CStations;
+            //}
             if (tubes.size() + CStations.size() > 0)
             {
                 cout << "Введите 1 для редактирования КС, для труб введите 0" << endl;
