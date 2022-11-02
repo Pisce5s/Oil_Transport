@@ -222,20 +222,34 @@ void change(CS& c, const bool& edit)
     }
 }
 
-void batch_editing(unordered_map<int, tube>& t)
+void batch_editing(unordered_map<int, tube>& t, const vector<int>& ID_old)
 {
+    vector<int> ID;
+    cout << "Для работы с фильтром введите 1, иначе 0" << endl;
+    bool choiсe_filt = get_pozitive_number(0, 1);
+    if (choiсe_filt)
+    {
+        ID = ID_old;
+    }
+    else
+    {
+        for (auto& a : t)
+            ID.push_back(a.first);
+    }
+    
     cout << "Введите 1 для редактирования всех найдённых элементов, для дальнейшего выбора введите 0" << endl;
     bool choiсe = get_pozitive_number(0, 1);
     if (choiсe)
     {
         cout << "Изменение состояния: 1 - выбранные работают, 0 - в нерабочем состоянии" << endl;
         bool choiсe_status = get_pozitive_number(0, 1);
-        for (auto& a : t)
-            change(a.second, choiсe_status);
+        for (int i : ID)//auto& a : t)
+            //change(a.second, choiсe_status);
+            change(t[i], choiсe_status);
     }
     else
     {
-        vector<int> ID;
+        vector<int> ID_new;
         cout << "Введите ID нужных труб, для завершения выбора введите -1" << endl;
         unsigned int select;
         while (1)
@@ -246,8 +260,8 @@ void batch_editing(unordered_map<int, tube>& t)
                 break;
             if (t.count(select) == 1)
             {
-                if (!(std::find(ID.begin(), ID.end(), select) != ID.end()))
-                    ID.push_back(select);
+                if (!(std::find(ID_new.begin(), ID_new.end(), select) != ID_new.end()))
+                    ID_new.push_back(select);
                 //else
                 //ID.push_back(select);
             }
@@ -257,11 +271,11 @@ void batch_editing(unordered_map<int, tube>& t)
             }
         }
 
-        if (ID.size() > 0)
+        if (ID_new.size() > 0)
         {
             cout << "Изменение состояния: 1 - выбранные работают, 0 - в нерабочем состоянии" << endl;
             bool choiсe_status = get_pozitive_number(0, 1);
-            for (const int& i : ID)
+            for (const int& i : ID_new)
                 change(t[i], choiсe_status);
         }
         else
@@ -269,20 +283,36 @@ void batch_editing(unordered_map<int, tube>& t)
     }
 }
 
-void batch_editing(unordered_map<int, CS>& t)
+void batch_editing(unordered_map<int, CS>& t, vector<int> ID_old)
 {
+    vector<int> ID;
+    cout << "Для работы с фильтром введите 1, иначе 0" << endl;
+    bool choiсe_filt = get_pozitive_number(0, 1);
+    if (choiсe_filt)
+    {
+        ID = ID_old;
+    }
+    else
+    {
+        for (auto& a : t)
+            ID.push_back(a.first);
+    }
+
     cout << "Введите 1 для редактирования всех найдённых элементов, для дальнейшего выбора введите 0" << endl;
     bool choiсe = get_pozitive_number(0, 1);
     if (choiсe)
     {
         cout << "Изменение состояния: 1 - добавить всем рабочий цех, 0 - убавить" << endl;
         bool choiсe_status = get_pozitive_number(0, 1);
-        for (auto& a : t)
-            change(a.second, choiсe_status);
+        for (int i : ID)//auto& a : t)
+            //change(a.second, choiсe_status);
+            change(t[i], choiсe_status);
+        //for (auto& a : t)
+            //change(a.second, choiсe_status);
     }
     else
     {
-        vector<int> ID;
+        vector<int> ID_new;
         cout << "Введите ID нужных КС, для завершения выбора введите -1" << endl;
         unsigned int select;
         while (1)
@@ -292,9 +322,9 @@ void batch_editing(unordered_map<int, CS>& t)
             if (select == -1)
                 break;
             if (t.count(select) == 1)
-                if (!(std::find(ID.begin(), ID.end(), select) != ID.end()))
+                if (!(std::find(ID_new.begin(), ID_new.end(), select) != ID_new.end()))
                 {
-                    ID.push_back(select);
+                    ID_new.push_back(select);
                 }
             else
             {
@@ -302,11 +332,11 @@ void batch_editing(unordered_map<int, CS>& t)
             }
         }
 
-        if (ID.size() > 0)
+        if (ID_new.size() > 0)
         {
             cout << "Изменение состояния: 1 - добавить всем рабочий цех, 0 - убавить" << endl;
             bool choiсe_status = get_pozitive_number(0, 1);
-            for (const int& i : ID)
+            for (const int& i : ID_new)
                 change(t[i], choiсe_status);
         }
         else
@@ -485,9 +515,9 @@ int main()
                 cout << "Введите 1 для редактирования КС, для труб введите 0" << endl;
                 bool choiсe = get_pozitive_number(0, 1);
                 if (choiсe)
-                    batch_editing(CStations);
+                    batch_editing(CStations, CStations_filt);
                 else
-                    batch_editing(tubes);
+                    batch_editing(tubes, tubes_filt);
             }
             else
                 cout << "Нет элементов для пакетного редактирования" << endl;
