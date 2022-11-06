@@ -2,22 +2,17 @@
 #include "utils.h"
 using namespace std;
 
-int CS::MaxID = 1;
+int CS::MaxID = 0;
 
 CS::CS()
 {
     //cout << "CS::CS()" << endl;
-    id = MaxID++;
+    id = ++MaxID;
     number_of_shops = 0;
     number_of_shops_in_work = 0;
     efficiency = 0;
     name = "Неизвестно";
 }
-
-//CS::CS(std::string name)
-//{
-//    //name = name;
-//}
 
 CS::CS(const CS& c)
 {
@@ -27,11 +22,6 @@ CS::CS(const CS& c)
     efficiency = c.efficiency;
     name = c.name;
 }
-
-//CS::~CS()
-//{
-//    cout << "CS::~CS()" << endl;
-//}
 
 std::string CS::get_name() const
 {

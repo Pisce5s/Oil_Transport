@@ -145,7 +145,7 @@ void del_item(unordered_map<int, tube>& p, unordered_map<int, CS>& c)
     else
     {
         unsigned int select_p = select_tube_index(p);
-        if (c.count(select_p) == 1)
+        if (p.count(select_p) == 1)
             p.erase(select_p);
         else
         {
@@ -362,14 +362,14 @@ int main()
         {
             tube t;
             cin >> t;
-            tubes.emplace(t.get_MaxID(), t);
+            tubes.emplace(t.get_ID(), t);
             break; //Добавить трубу
         }
         case 2:
         {
             CS c;
             cin >> c;
-            CStations.emplace(c.get_MaxID(), c);
+            CStations.emplace(c.get_ID(), c);
             break; //Добавить КС
         }
         case 3:

@@ -2,12 +2,12 @@
 #include "utils.h"
 using namespace std;
 
-int tube::MaxID = 1;
+int tube::MaxID = 0;
 
 tube::tube()
 {
 	//cout << "tube::tube()" << endl;
-    id = 0;
+    id = ++MaxID;
     length = 0;
     diameter = 0;
     status = false;
@@ -16,16 +16,11 @@ tube::tube()
 tube::tube(const tube& t)
 {
 	//cout << "tube::tube(const tube& t)" << endl;
-    id = MaxID++;
+    id = t.id;
     length = t.length;
     diameter = t.diameter;
     status = t.status;
 }
-
-//tube::~tube()
-//{
-//	cout << "tube::~tube()" << endl;
-//}
 
 int tube::get_MaxID()
 {
@@ -49,14 +44,8 @@ ostream& operator << (ostream& out, const tube& p)
         << "Длина = " << p.length << endl
         << "Диаметр = " << p.diameter << endl
         << "Состояние работы: ";
-    if (p.status == 0)
-    {
-        out << "Не работает" << endl;
-    }
-    else
-    {
-        out << "Работает" << endl;
-    }
+    if (p.status) { out << "Работает" << endl; }
+    else { out << "Не работает" << endl; }
     return out;
 }
 

@@ -25,4 +25,3 @@ public:
     friend std::ostream& operator << (std::ostream& out, const CS& p);
     friend std::istream& operator >> (std::istream& in, CS& p);
 };
-
