@@ -24,6 +24,7 @@
     <ProjectGuid>{8c333383-4d5e-4918-b1a5-a1fe294a165b}</ProjectGuid>
     <RootNamespace>OilTransport</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Oil_Transport_Lozhkin</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

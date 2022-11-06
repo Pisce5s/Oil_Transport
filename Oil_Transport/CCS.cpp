@@ -65,7 +65,7 @@ istream& operator >> (istream& in, CS& p)
 ostream& operator << (ostream& out, const CS& p)
 { 
     out << "ID = " << p.id << endl
-        << "MaxID = " << CS::MaxID << endl
+        //<< "MaxID = " << CS::MaxID << endl
         << "Название = " << p.name << endl
         << "Число цехов = " << p.number_of_shops << endl
         << "Число цехов в работе: " << p.number_of_shops_in_work << endl

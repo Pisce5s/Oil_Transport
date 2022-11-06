@@ -425,7 +425,7 @@ int main()
                 {
                     tube t;
                     load_tube(file_in, t);
-                    tubes.emplace(t.get_MaxID(), t);
+                    tubes.emplace(tube::get_MaxID(), t);
                 }
                 file_in >> count;
                 CStations.clear();
