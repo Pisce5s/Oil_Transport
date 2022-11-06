@@ -2,7 +2,7 @@
 #include "utils.h"
 using namespace std;
 
-int tube::MaxID = 0;
+int tube::MaxID = 1;
 
 tube::tube()
 {
@@ -32,10 +32,20 @@ int tube::get_MaxID()
     return MaxID;
 }
 
+int tube::get_ID() const
+{
+    return id;
+}
+
+void tube::set_ID(int ID)
+{
+    id = ID;
+}
+
 ostream& operator << (ostream& out, const tube& p)
 {
     out << "ID = " << p.id << endl
-        //<< "MaxID = " << tube::MaxID << endl
+        << "MaxID = " << tube::MaxID << endl
         << "Длина = " << p.length << endl
         << "Диаметр = " << p.diameter << endl
         << "Состояние работы: ";

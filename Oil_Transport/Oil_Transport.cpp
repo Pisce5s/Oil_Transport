@@ -37,16 +37,20 @@ void edit_tube(tube& t)
 
 void save_tube(ofstream& file_out, const tube& t)
 {
-    file_out << t.length << endl << t.diameter << endl << t.status << endl;
+    file_out << t.get_ID() << endl << t.length << endl << t.diameter << endl << t.status << endl;
 }
 
 void save_CS(ofstream& file_out, const CS& c)
 {
-    file_out << c.name << endl << c.number_of_shops << endl << c.number_of_shops_in_work << endl << c.efficiency << endl;
+    file_out << c.get_ID() << endl << c.name << endl << c.number_of_shops << endl
+             << c.number_of_shops_in_work << endl << c.efficiency << endl;
 }
 
 void load_tube(ifstream& file_in, tube& t)
 {
+    int new_id;
+    file_in >> new_id;
+    t.set_ID(new_id);
     file_in >> t.length;
     file_in >> t.diameter;
     file_in >> t.status;
@@ -54,6 +58,9 @@ void load_tube(ifstream& file_in, tube& t)
 
 void load_CS(ifstream& file_in, CS& c)
 {
+    int new_id;
+    file_in >> new_id;
+    c.set_ID(new_id);
     getline(file_in >> ws, c.name);
     file_in >> c.number_of_shops;
     file_in >> c.number_of_shops_in_work;
@@ -95,34 +102,28 @@ void edit_CS(CS& t)
 tube& select_tube(unordered_map<int, tube>& p)
 {
     cout << "Введите индекс(ID): ";
-    tube crutch;
-    unsigned int index = get_pozitive_number(0u, (unsigned int)(crutch.get_MaxID()));
-    //unsigned int index = get_pozitive_number(1, p.size());
+    unsigned int index = get_pozitive_number(0u, (unsigned int)(tube::get_MaxID()));
     return p[index];
 }
 
 CS& select_CS(unordered_map<int, CS>& c)
 {
     cout << "Введите индекс(ID): ";
-    tube crutch;
-    unsigned int index = get_pozitive_number(0u, (unsigned int)(crutch.get_MaxID()));
-    //unsigned int index = get_pozitive_number(1, c.size());
+    unsigned int index = get_pozitive_number(0u, (unsigned int)(CS::get_MaxID()));
     return c[index];
 }
 
 unsigned int select_tube_index(unordered_map<int, tube>& p)
 {
     cout << "Введите индекс(ID): ";
-    tube crutch;
-    unsigned int index = get_pozitive_number(0u, (unsigned int)(crutch.get_MaxID()));
+    unsigned int index = get_pozitive_number(0u, (unsigned int)(tube::get_MaxID()));
     return (index);
 }
 
 unsigned int select_CS_index(unordered_map<int, CS>& c)
 {
     cout << "Введите индекс(ID): ";
-    tube crutch;
-    unsigned int index = get_pozitive_number(0u, (unsigned int)(crutch.get_MaxID()));
+    unsigned int index = get_pozitive_number(0u, (unsigned int)(CS::get_MaxID()));
     return (index);
 }
 
@@ -139,7 +140,6 @@ void del_item(unordered_map<int, tube>& p, unordered_map<int, CS>& c)
         else
         {
             cout << "Нет такого элемента" << endl;
-            //del_item(p, c);
         }
     }
     else
@@ -150,7 +150,6 @@ void del_item(unordered_map<int, tube>& p, unordered_map<int, CS>& c)
         else
         {
             cout << "Нет такого элемента" << endl;
-            //del_item(p, c);
         }
     }
 }
@@ -180,7 +179,7 @@ using CS_filter = bool(*)(const CS& c, T param);
 
 bool check_by_name(const CS& c, string param)
 {
-    return c.name == param;
+    return (c.name.find(param) != std::string::npos);
 }
 
 bool check_by_percent(const CS& c, double param)

@@ -17,7 +17,10 @@ public:
     std::string get_name() const;
     void set_name(std::string);
 
-    int get_MaxID() const;
+    static int get_MaxID();
+
+    int get_ID() const;
+    void set_ID(int ID);
 
     friend std::ostream& operator << (std::ostream& out, const CS& p);
     friend std::istream& operator >> (std::istream& in, CS& p);

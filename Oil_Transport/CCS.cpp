@@ -2,12 +2,12 @@
 #include "utils.h"
 using namespace std;
 
-int CS::MaxID = 0;
+int CS::MaxID = 1;
 
 CS::CS()
 {
     //cout << "CS::CS()" << endl;
-    id = 0;
+    id = MaxID++;
     number_of_shops = 0;
     number_of_shops_in_work = 0;
     efficiency = 0;
@@ -22,7 +22,6 @@ CS::CS()
 CS::CS(const CS& c)
 {
     //cout << "CS::CS(const CS& c)" << endl;
-    id = MaxID++;
     number_of_shops = c.number_of_shops;
     number_of_shops_in_work = c.number_of_shops_in_work;
     efficiency = c.efficiency;
@@ -44,9 +43,19 @@ void CS::set_name(std::string new_name)
     name = new_name;
 }
 
-int CS::get_MaxID() const
+int CS::get_MaxID()
 {
     return MaxID;
+}
+
+int CS::get_ID() const
+{
+    return id;
+}
+
+void CS::set_ID(int ID)
+{
+    id = ID;
 }
 
 istream& operator >> (istream& in, CS& p)
@@ -65,7 +74,7 @@ istream& operator >> (istream& in, CS& p)
 ostream& operator << (ostream& out, const CS& p)
 { 
     out << "ID = " << p.id << endl
-        //<< "MaxID = " << CS::MaxID << endl
+        << "MaxID = " << CS::MaxID << endl
         << "Название = " << p.name << endl
         << "Число цехов = " << p.number_of_shops << endl
         << "Число цехов в работе: " << p.number_of_shops_in_work << endl
