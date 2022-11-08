@@ -21,10 +21,7 @@ void print_menu()
         << "7.Загрузить" << endl
         << "8.Удалить элемент" << endl
         << "9.Удалить всё" << endl
-        << "10.Фильтр труб по состоянию" << endl
-        << "11.Фильтр КС по названию" << endl
-        << "12.Фильтр КС по проценту задействованных цехов" << endl
-        << "13.Пакетное редактирование" << endl
+        << "10.Фильтры и пакетное редактирование" << endl
         << "0.Выход" << endl
         << "Введите комманду" << endl;
 }
@@ -138,9 +135,7 @@ void del_item(unordered_map<int, tube>& p, unordered_map<int, CS>& c)
         if (c.count(select_c) == 1)
             c.erase(select_c);
         else
-        {
             cout << "Нет такого элемента" << endl;
-        }
     }
     else
     {
@@ -148,9 +143,7 @@ void del_item(unordered_map<int, tube>& p, unordered_map<int, CS>& c)
         if (p.count(select_p) == 1)
             p.erase(select_p);
         else
-        {
             cout << "Нет такого элемента" << endl;
-        }
     }
 }
 
@@ -163,7 +156,7 @@ bool check_by_status(const tube& c, bool param)
 }
 
 template<typename T>
-vector<int> find_tube_by_filter(unordered_map<int, tube>& tubes, tube_filter<T> f, T param)
+vector<int> find_tube_by_filter(const unordered_map<int, tube>& tubes, tube_filter<T> f, T param)
 {
     vector<int> ID;
     for (auto& c : tubes)
@@ -188,7 +181,7 @@ bool check_by_percent(const CS& c, double param)
 }
 
 template<typename T>
-vector<int> find_CS_by_filter(unordered_map<int, CS>& CStations, CS_filter<T> f, T param)
+vector<int> find_CS_by_filter(const unordered_map<int, CS>& CStations, CS_filter<T> f, T param)
 {
     vector<int> ID;
     for (auto& c : CStations)
@@ -221,126 +214,233 @@ void change(CS& c, const bool& edit)
     }
 }
 
-void batch_editing(unordered_map<int, tube>& t, const vector<int>& ID_old)
+vector <int> edit_tube_by_ID(unordered_map<int, tube>& tubes, const vector <int>& filted_ID, const bool& with_filter)
 {
-    vector<int> ID;
-    cout << "Для работы с фильтром введите 1, иначе 0" << endl;
-    bool choiсe_filt = get_pozitive_number(0, 1);
-    if (choiсe_filt)
+    vector<int> ID_new;
+    cout << "Введите ID нужных труб, для завершения выбора введите -1" << endl;
+    unsigned int select;
+    while (1)
     {
-        ID = ID_old;
-    }
-    else
-    {
-        for (auto& a : t)
-            ID.push_back(a.first);
-    }
-    
-    cout << "Введите 1 для редактирования всех найдённых элементов, для дальнейшего выбора введите 0" << endl;
-    bool choiсe = get_pozitive_number(0, 1);
-    if (choiсe)
-    {
-        cout << "Изменение состояния: 1 - выбранные работают, 0 - в нерабочем состоянии" << endl;
-        bool choiсe_status = get_pozitive_number(0, 1);
-        for (int i : ID)//auto& a : t)
-            //change(a.second, choiсe_status);
-            change(t[i], choiсe_status);
-    }
-    else
-    {
-        vector<int> ID_new;
-        cout << "Введите ID нужных труб, для завершения выбора введите -1" << endl;
-        unsigned int select;
-        while (1)
+        select = get_pozitive_number(-1, (int)(tube::get_MaxID()));
+        if (select == -1)//Если ввели -1
+            break;
+        if (tubes.count(select) == 1)//Если ввели существующий ID
         {
-            tube crutch;
-            select = get_pozitive_number(-1, (int)(crutch.get_MaxID()));
-            if (select == -1)
-                break;
-            if (t.count(select) == 1)
+            if (with_filter)//Если передали отфильтрованные
             {
-                if (!(std::find(ID_new.begin(), ID_new.end(), select) != ID_new.end()))
+                if (!(std::find(ID_new.begin(), ID_new.end(), select) != ID_new.end()) && (std::find(filted_ID.begin(), filted_ID.end(), select) != filted_ID.end()))// Если элемент есть в filted_ID и ещё не записан в ID_new
                     ID_new.push_back(select);
-                //else
-                //ID.push_back(select);
+                else
+                    cout << "ID уже выбран или такого ID нет в списке отфильтрованных" << endl;
             }
-            else
+            else//Если передали все элементы
             {
-                cout << "Нет такого элемента" << endl;
+                if (!(std::find(ID_new.begin(), ID_new.end(), select) != ID_new.end()))// Если элемент ещё не записан в ID_new
+                    ID_new.push_back(select);
+                else
+                    cout << "ID уже был выбран" << endl;
             }
         }
+        else
+        {
+            cout << "Нет такого элемента" << endl;
+        }
+    }//В этот момент есть вектор нужных для редактирования ID_new
+    return filted_ID;
+}
 
-        if (ID_new.size() > 0)
+void batch_editing(unordered_map<int, tube>& tubes)
+{
+    cout << "Для применения фильтра перед пакетным редактированием введите 1, для работы со всеми трубами введите 0" << endl;
+    bool choice_filt;
+    choice_filt = get_pozitive_number(0, 1);
+    if (choice_filt)
+    {
+        vector <int> tubes_filt;
+        cout << "Какие трубы отобрать? 1 - рабочие, 0 - в ремонте " << endl;
+        bool status = get_pozitive_number(0, 1);
+        for (int i : find_tube_by_filter(tubes, check_by_status, status))
+        {
+            cout << tubes[i] << endl;
+            tubes_filt.push_back(i);
+        }
+        cout << "Введите 1 для выбора элементов редактирования по ID, для редактирования только отфильтрованных введите 0" << endl;
+        bool choice_by_ID = get_pozitive_number(0, 1);
+        if (choice_by_ID) //С выбором ID после фильтра
+        {
+            vector<int> ID_new = edit_tube_by_ID(tubes, tubes_filt, 1);
+            if (ID_new.size() > 0)
+            {
+                cout << "Изменение состояния: 1 - выбранные работают, 0 - в нерабочем состоянии" << endl;
+                bool choiсe_status = get_pozitive_number(0, 1);
+                for (int& i : ID_new)
+                    change(tubes[i], choiсe_status);
+            }
+            else
+                cout << "Не выбрано элементов для редактирования" << endl;
+        }
+        else //Только с фильтром
+        {
+            if (tubes_filt.size() > 0)
+            {
+                cout << "Изменение состояния: 1 - выбранные работают, 0 - в нерабочем состоянии" << endl;
+                bool choiсe_status = get_pozitive_number(0, 1);
+                for (int& i : tubes_filt)
+                    change(tubes[i], choiсe_status);
+            }
+            else
+                cout << "Не выбрано элементов для редактирования" << endl;
+        }
+    }
+    else //Без фильтра
+    {
+        cout << "Введите 1 для выбора элементов редактирования по ID, для редактирования всех 0" << endl;
+        bool choice_by_ID = get_pozitive_number(0, 1);
+        if (choice_by_ID) //С выбором ID
+        {
+            vector<int> ID_new = edit_tube_by_ID(tubes, {}, 0);
+            if (ID_new.size() > 0)
+            {
+                cout << "Изменение состояния: 1 - выбранные работают, 0 - в нерабочем состоянии" << endl;
+                bool choiсe_status = get_pozitive_number(0, 1);
+                for (int& i : ID_new)
+                    change(tubes[i], choiсe_status);
+            }
+            else
+            cout << "Не выбрано элементов для редактирования" << endl;
+        }
+        else//Изменить вообще все
         {
             cout << "Изменение состояния: 1 - выбранные работают, 0 - в нерабочем состоянии" << endl;
             bool choiсe_status = get_pozitive_number(0, 1);
-            for (const int& i : ID_new)
-                change(t[i], choiсe_status);
+            for (auto& t : tubes)
+                change(t.second, choiсe_status);
         }
-        else
-            cout << "Не выбрано элементов для редактирования" << endl;
     }
 }
 
-void batch_editing(unordered_map<int, CS>& t, vector<int> ID_old)
+vector <int> edit_CS_by_ID(unordered_map<int, CS>& CStations, const vector <int>& filted_ID, const bool& with_filter)
 {
-    vector<int> ID;
-    cout << "Для работы с фильтром введите 1, иначе 0" << endl;
-    bool choiсe_filt = get_pozitive_number(0, 1);
-    if (choiсe_filt)
+    vector<int> ID_new;
+    cout << "Введите ID нужных КС, для завершения выбора введите -1" << endl;
+    unsigned int select;
+    while (1)
     {
-        ID = ID_old;
-    }
-    else
-    {
-        for (auto& a : t)
-            ID.push_back(a.first);
-    }
-
-    cout << "Введите 1 для редактирования всех найдённых элементов, для дальнейшего выбора введите 0" << endl;
-    bool choiсe = get_pozitive_number(0, 1);
-    if (choiсe)
-    {
-        cout << "Изменение состояния: 1 - добавить всем рабочий цех, 0 - убавить" << endl;
-        bool choiсe_status = get_pozitive_number(0, 1);
-        for (int i : ID)//auto& a : t)
-            //change(a.second, choiсe_status);
-            change(t[i], choiсe_status);
-        //for (auto& a : t)
-            //change(a.second, choiсe_status);
-    }
-    else
-    {
-        vector<int> ID_new;
-        cout << "Введите ID нужных КС, для завершения выбора введите -1" << endl;
-        unsigned int select;
-        while (1)
+        select = get_pozitive_number(-1, (int)(CS::get_MaxID()));
+        if (select == -1)//Если ввели -1
+            break;
+        if (CStations.count(select) == 1)//Если ввели существующий ID
         {
-            CS crutch;
-            select = get_pozitive_number(-1, (int)(crutch.get_MaxID()));
-            if (select == -1)
-                break;
-            if (t.count(select) == 1)
-                if (!(std::find(ID_new.begin(), ID_new.end(), select) != ID_new.end()))
-                {
-                    ID_new.push_back(select);
-                }
-            else
+            if (with_filter)//Если передали отфильтрованные
             {
-                cout << "Нет такого элемента" << endl;
+                if (!(std::find(ID_new.begin(), ID_new.end(), select) != ID_new.end()) && (std::find(filted_ID.begin(), filted_ID.end(), select) != filted_ID.end()))// Если элемент есть в filted_ID и ещё не записан в ID_new
+                    ID_new.push_back(select);
+                else
+                    cout << "ID уже выбран или такого ID нет в списке отфильтрованных" << endl;
+            }
+            else//Если передали все элементы
+            {
+                if (!(std::find(ID_new.begin(), ID_new.end(), select) != ID_new.end()))// Если элемент ещё не записан в ID_new
+                    ID_new.push_back(select);
+                else
+                    cout << "ID уже был выбран" << endl;
             }
         }
+        else
+        {
+            cout << "Нет такого элемента" << endl;
+        }
+    }//В этот момент есть вектор нужных для редактирования ID_new
+    return filted_ID;
+}
 
+void edit_CS_by_ID_with_filter(unordered_map<int, CS>& CStations, vector <int>& CStations_filt)
+{
+    cout << "Введите 1 для выбора элементов редактирования по ID, для редактирования всех 0" << endl;
+    bool choice_by_ID = get_pozitive_number(0, 1);
+    if (choice_by_ID) //С выбором ID с фильтром
+    {
+        vector<int> ID_new = edit_CS_by_ID(CStations, CStations_filt, 1);
         if (ID_new.size() > 0)
         {
-            cout << "Изменение состояния: 1 - добавить всем рабочий цех, 0 - убавить" << endl;
+            cout << "Изменение количества работающих цехов: 1 - включить 1 цех, 0 - выключить " << endl;
             bool choiсe_status = get_pozitive_number(0, 1);
-            for (const int& i : ID_new)
-                change(t[i], choiсe_status);
+            for (int& i : ID_new)
+                change(CStations[i], choiсe_status);
         }
         else
             cout << "Не выбрано элементов для редактирования" << endl;
     }
+    else//Без ID с фильтром
+    {
+        cout << "Изменение количества работающих цехов: 1 - включить 1 цех, 0 - выключить " << endl;
+        bool choiсe_status = get_pozitive_number(0, 1);
+        for (int& i : CStations_filt)
+            change(CStations[i], choiсe_status);
+    }
+}
+
+void batch_editing(unordered_map<int, CS>& CStations)
+{
+    cout << "0.Работа со всеми КС" << endl
+        << "1.Фильтр по названию" << endl
+        << "2.Фильтр по проценту незадействованных цехов" << endl;
+    switch (get_pozitive_number(0, 2))
+    {
+    case 0:
+    {
+        cout << "Введите 1 для выбора элементов редактирования по ID, для редактирования всех 0" << endl;
+        bool choice_by_ID = get_pozitive_number(0, 1);
+        if (choice_by_ID) //С выбором ID без фильтра
+        {
+            vector<int> ID_new = edit_CS_by_ID(CStations, {}, 0);
+            if (ID_new.size() > 0)
+            {
+                cout << "Изменение количества работающих цехов: 1 - включить 1 цех, 0 - выключить " << endl;
+                bool choiсe_status = get_pozitive_number(0, 1);
+                for (int& i : ID_new)
+                    change(CStations[i], choiсe_status);
+            }
+            else
+                cout << "Не выбрано элементов для редактирования" << endl;
+        }
+        else//Без ID и фильтра
+        {
+            cout << "Изменение количества работающих цехов: 1 - включить 1 цех, 0 - выключить " << endl;
+            bool choiсe_status = get_pozitive_number(0, 1);
+            for (auto& c : CStations)
+                change(c.second, choiсe_status);
+        }
+        break;
+    }
+    case 1:
+    {
+        vector <int> CStations_filt;
+        cout << "Введите, что должно включать название КС" << endl;
+        string name;
+        getline(cin >> ws, name);
+        for (int i : find_CS_by_filter(CStations, check_by_name, name))
+        {
+            cout << CStations[i] << endl;
+            CStations_filt.push_back(i);
+        }
+        edit_CS_by_ID_with_filter(CStations, CStations_filt);
+        break;
+    }
+    case 3:
+    {
+        vector <int> CStations_filt;
+        cout << "Введите минимальный процент незадействованных цехов в КС" << endl;
+        double min_percent = get_pozitive_number(0.0, 100.0);
+        for (int i : find_CS_by_filter(CStations, check_by_percent, min_percent))
+        {
+            cout << CStations[i] << endl;
+            CStations_filt.push_back(i);
+        }
+        edit_CS_by_ID_with_filter(CStations, CStations_filt);
+        break;
+    }
+    }//Конец switch
 }
 
 int main()
@@ -350,13 +450,13 @@ int main()
     unordered_map<int, tube> tubes;
     unordered_map<int, CS> CStations;
 
-    vector<int> tubes_filt;
-    vector<int> CStations_filt;
+    //vector<int> tubes_filt;
+    //vector<int> CStations_filt;
 
     while (true)
     {
         print_menu();
-        switch (get_pozitive_number(0,13))
+        switch (get_pozitive_number(0,10))
         {
         case 1:
         {
@@ -386,12 +486,16 @@ int main()
         {
             if (tubes.size() > 0)
                 edit_tube(select_tube(tubes));
+            else
+                cout << "Нет труб для редактирования" << endl;
             break; //Редактировать трубу
         }
         case 5:
         {
             if (CStations.size() > 0)
                 edit_CS(select_CS(CStations));
+            else
+                cout << "Нет КС для редактирования" << endl;
             break; //Редактировать КС
         }
         case 6:
@@ -419,7 +523,7 @@ int main()
                 int count;
                 file_in >> count;
                 tubes.clear();
-                tubes.reserve(count);
+                //tubes.reserve(count);
                 while (count--)
                 {
                     tube t;
@@ -428,7 +532,7 @@ int main()
                 }
                 file_in >> count;
                 CStations.clear();
-                CStations.reserve(count);
+                //CStations.reserve(count);
                 while (count--)
                 {
                     CS c;
@@ -457,70 +561,29 @@ int main()
         }
         case 10:
         {
-            cout << "Введите 0 для просмотра нерабочих труб, 1 - для работающих" << endl;
-            bool status = false;
-            status = get_pozitive_number(0, 1);
-            tubes_filt.clear();
-            for (int i : find_tube_by_filter(tubes, check_by_status, status))
+            if (tubes.size() + CStations.size() != 0)
             {
-                cout << tubes[i] << endl;
-                tubes_filt.push_back(i);
-            }
-            break;//Фильтр труб по состоянию
-        }
-        case 11:
-        {
-            cout << "Введите название" << endl;
-            string name = "Unknown";
-            cin >> name;
-            CStations_filt.clear();
-            for (int i : find_CS_by_filter(CStations, check_by_name, name))
-            {
-                cout << CStations[i] << endl;
-                CStations_filt.push_back(i);
-            }
-            break;//Фильтр КС по названию
-        }
-        case 12:
-        {
-            cout << "Введите минимальный процент незадействованных цехов" << endl;
-            double percent = 0;
-            percent = get_pozitive_number(0.0, 100.0);
-            CStations_filt.clear();
-            for (int i : find_CS_by_filter(CStations, check_by_percent, percent))
-            {
-                cout << CStations[i] << endl;
-                CStations_filt.push_back(i);
-            }
-            break;//Фильтр КС по проценту
-        }
-        case 13:
-        {
-            //cout << "Введите 1 для редактирования отфильтрованных элементов, для работы со всеми введите 0" << endl;
-            //bool choice_filter = get_pozitive_number(0, 1);
-            //unordered_map<int, tube> tubes_to_do;
-            //unordered_map<int, CS> CS_to_do;
-            //if (choice_filter)
-            //{
-            //    
-            //}
-            //else
-            //{
-            //    tubes_to_do = tubes;
-            //    CS_to_do = CStations;
-            //}
-            if (tubes.size() + CStations.size() > 0)
-            {
-                cout << "Введите 1 для редактирования КС, для труб введите 0" << endl;
-                bool choiсe = get_pozitive_number(0, 1);
-                if (choiсe)
-                    batch_editing(CStations, CStations_filt);
+                cout << "Для работы с трубами, введите 0. Для работы с КС, введите 1" << endl;
+                bool choice_CS;
+                choice_CS = get_pozitive_number(0, 1);
+                if (choice_CS)
+                {
+                    if (CStations.size() > 0)
+                        batch_editing(CStations);
+                    else
+                        cout << "Нет КС для редактирования" << endl;
+                }
                 else
-                    batch_editing(tubes, tubes_filt);
+                {
+                    if (tubes.size() > 0)
+                        batch_editing(tubes);
+                    else
+                        cout << "Нет труб для редактирования" << endl;
+                }
             }
             else
-                cout << "Нет элементов для пакетного редактирования" << endl;
-            break;//Пакетное ред.
+                cout << "Нет элементов" << endl;
+            break;
         }
         case 0:
         {
